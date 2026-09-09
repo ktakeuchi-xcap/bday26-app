@@ -130,6 +130,14 @@ function renderKickoff() {
   }
   updateCountdown();
   setInterval(updateCountdown, 1000);
+
+  // 動作確認用の隠しボタン（2026-09-09竹内FB）。カウントダウンを待たずに進める。
+  // 目立たない見た目にしてあるが、本番公開前（BDAY26-020）には削除・無効化を検討すること
+  app.appendChild(el("button", {
+    text: "・",
+    className: "debug-skip",
+    onClick: () => goto("round", { currentRoundIndex: 0 })
+  }));
 }
 
 function renderRound() {
