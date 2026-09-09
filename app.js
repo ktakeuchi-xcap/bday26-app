@@ -59,8 +59,31 @@ function transition(patch) {
   render();
 }
 
+// 画面（ページ）単位の履歴。ヒント開示等、画面が変わらない更新はtransition()を直接使い、
+// 履歴には積まない。goto()で画面が変わる操作だけを1ページとして記録する。
+let backStack = [];
+let forwardStack = [];
+
 function goto(screen, extra = {}) {
+  backStack.push(state);
+  forwardStack = [];
   transition({ currentScreen: screen, ...extra });
+}
+
+function goBack() {
+  if (backStack.length === 0) return;
+  forwardStack.push(state);
+  state = backStack.pop();
+  saveState(state);
+  render();
+}
+
+function goForward() {
+  if (forwardStack.length === 0) return;
+  backStack.push(state);
+  state = forwardStack.pop();
+  saveState(state);
+  render();
 }
 
 // ---- 各画面のレンダリング ----
@@ -68,6 +91,7 @@ const app = document.getElementById("app");
 
 function render() {
   app.innerHTML = "";
+  renderNavBar();
   const screen = state.currentScreen;
   const renderers = {
     kickoff: renderKickoff,
@@ -84,6 +108,18 @@ function render() {
     archiveDetail: renderArchiveDetail
   };
   (renderers[screen] || renderUnknown)();
+}
+
+function renderNavBar() {
+  if (backStack.length === 0 && forwardStack.length === 0) return;
+  const bar = el("div", { className: "navbar" });
+  if (backStack.length > 0) {
+    bar.appendChild(el("button", { text: "← 1ページ戻る", className: "nav", onClick: goBack }));
+  }
+  if (forwardStack.length > 0) {
+    bar.appendChild(el("button", { text: "1ページ進む →", className: "nav", onClick: goForward }));
+  }
+  app.appendChild(bar);
 }
 
 function el(tag, opts = {}, children = []) {
@@ -340,6 +376,8 @@ function renderArchiveList() {
     onClick: () => {
       if (confirm("最初からやり直しますか？進行状況がすべて消えます。")) {
         state = resetState();
+        backStack = [];
+        forwardStack = [];
         render();
       }
     }
