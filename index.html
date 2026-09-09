@@ -2,10 +2,57 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>Hello World</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>30歳、はじまりの一日</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #faf7f2;
+    color: #333;
+    margin: 0;
+    padding: 24px;
+    line-height: 1.7;
+  }
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    margin: 8px 0;
+    font-size: 1rem;
+  }
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .link {
+    color: #a15c2c;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .feedback {
+    color: #c0392b;
+  }
+  .countdown {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  p {
+    white-space: pre-wrap;
+  }
+</style>
 </head>
 <body>
-<h1>Hello World</h1>
-<p>GitHub Pages 表示テスト（bday26-app）</p>
+<div id="app"></div>
+<script src="content.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
