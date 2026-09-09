@@ -51,7 +51,7 @@ const CONTENT = {
     ]
   },
   timeCheck: {
-    // 美術館後の自動分岐判定。2026-09-09竹内FBにより確定
+    // 美術館後の自動分岐判定
     cutoffTime: "17:00"
   },
   branchRiddles: {

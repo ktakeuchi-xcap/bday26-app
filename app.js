@@ -131,7 +131,7 @@ function renderKickoff() {
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // 動作確認用の隠しボタン（2026-09-09竹内FB）。カウントダウンを待たずに進める。
+  // 動作確認用の隠しボタン。カウントダウンを待たずに進める。
   // 目立たない見た目にしてあるが、本番公開前（BDAY26-020）には削除・無効化を検討すること
   app.appendChild(el("button", {
     text: "・",
@@ -245,7 +245,6 @@ function renderMuseumGuideList() {
 
   if (state.viewingFromArchive) {
     // 画面一覧（アーカイブ）経由で開いた場合は、分岐判定を行わず一覧に戻るだけにする
-    // （2026-09-09竹内FB：クリア後も一覧⇔作品詳細を同じように見返せるようにする）
     app.appendChild(el("button", {
       text: "画面一覧に戻る",
       onClick: () => goto("archiveList", { viewingFromArchive: false })
@@ -327,7 +326,6 @@ function renderArchiveList() {
       onClick: () => {
         if (item.key === "museumGuide") {
           // 美術館鑑賞ガイドはクリア前と同じ一覧⇔作品詳細の画面をそのまま再利用する
-          // （2026-09-09竹内FB）
           goto("museumGuideList", { viewingFromArchive: true });
         } else {
           goto("archiveDetail", { currentArchiveKey: item.key });
@@ -335,6 +333,17 @@ function renderArchiveList() {
       }
     }));
   });
+
+  app.appendChild(el("button", {
+    text: "最初からやり直す",
+    className: "danger",
+    onClick: () => {
+      if (confirm("最初からやり直しますか？進行状況がすべて消えます。")) {
+        state = resetState();
+        render();
+      }
+    }
+  }));
 }
 
 function renderArchiveDetail() {
