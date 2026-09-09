@@ -242,20 +242,31 @@ function renderMuseumGuideList() {
       onClick: () => goto("museumGuideDetail", { currentWorkId: work.id })
     }));
   });
-  app.appendChild(el("button", {
-    text: "次へ（全部見ていなくてもOK）",
-    onClick: () => {
-      const branch = decideBranch(CONTENT.timeCheck.cutoffTime);
-      goto(branch === "plant" ? "branchPlant" : "branchDinner", { branchChoice: branch });
-    }
-  }));
+
+  if (state.viewingFromArchive) {
+    // 画面一覧（アーカイブ）経由で開いた場合は、分岐判定を行わず一覧に戻るだけにする
+    // （2026-09-09竹内FB：クリア後も一覧⇔作品詳細を同じように見返せるようにする）
+    app.appendChild(el("button", {
+      text: "画面一覧に戻る",
+      onClick: () => goto("archiveList", { viewingFromArchive: false })
+    }));
+  } else {
+    app.appendChild(el("button", {
+      text: "次へ（全部見ていなくてもOK）",
+      onClick: () => {
+        const branch = decideBranch(CONTENT.timeCheck.cutoffTime);
+        goto(branch === "plant" ? "branchPlant" : "branchDinner", { branchChoice: branch });
+      }
+    }));
+  }
 }
 
 function renderMuseumGuideDetail() {
   const work = CONTENT.museumGuide.works.find((w) => w.id === state.currentWorkId) || CONTENT.museumGuide.works[0];
   app.appendChild(el("h2", { text: work.title }));
   app.appendChild(el("p", { text: work.comment }));
-  app.appendChild(el("button", { text: "一覧に戻る", onClick: () => goto("museumGuideList") }));
+  // viewingFromArchiveはmuseumGuideListへ戻る際に引き継ぐ（次へボタンの表示切り替えのため）
+  app.appendChild(el("button", { text: "一覧に戻る", onClick: () => goto("museumGuideList", { viewingFromArchive: state.viewingFromArchive }) }));
 }
 
 function renderBranchPlant() {
@@ -313,7 +324,15 @@ function renderArchiveList() {
     app.appendChild(el("p", {
       text: item.label,
       className: "link",
-      onClick: () => goto("archiveDetail", { currentArchiveKey: item.key })
+      onClick: () => {
+        if (item.key === "museumGuide") {
+          // 美術館鑑賞ガイドはクリア前と同じ一覧⇔作品詳細の画面をそのまま再利用する
+          // （2026-09-09竹内FB）
+          goto("museumGuideList", { viewingFromArchive: true });
+        } else {
+          goto("archiveDetail", { currentArchiveKey: item.key });
+        }
+      }
     }));
   });
 }
@@ -326,7 +345,7 @@ function renderArchiveDetail() {
   else if (key === "milestoneReveal") text = CONTENT.milestoneReveal.text;
   else if (key === "dressCode") text = CONTENT.dressCode.instructionText;
   else if (key === "lunchRiddle") text = CONTENT.lunchRiddle.text;
-  else if (key === "museumGuide") text = CONTENT.museumGuide.works.map((w) => `${w.title}: ${w.comment}`).join("\n");
+  // museumGuideはrenderArchiveListからmuseumGuideListへ直接遷移するため、ここには来ない
   else if (key === "toPlantShop") text = CONTENT.branchRiddles.toPlantShop.text;
   else if (key === "toDinner") text = CONTENT.branchRiddles.toDinner.text;
   else if (key === "ending") text = CONTENT.ending.text;
