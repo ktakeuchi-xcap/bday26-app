@@ -22,7 +22,7 @@ const CONTENT = {
       locationRiddle: {
         image: "assets/round1_quiz.png",
         text: "画像の謎を解いて、正解の場所（家電）まで行こう。答え：冷蔵庫",
-        hints: []
+        hints: ["手のイラストをよく見ると、右手と左手があるようです。英語で考えてみましょう。"]
       },
       paperPuzzle: {
         text: "（ダミー）冷蔵庫のところに置かれている紙の謎",
@@ -35,7 +35,7 @@ const CONTENT = {
       locationRiddle: {
         image: "assets/round2_quiz.png",
         text: "画像の謎を解いて、正解の場所（家電）まで行こう。答え：スピーカー",
-        hints: []
+        hints: ["左の図は五十音表ですが、右の図は三角形の向きに沿って一周するように文字が埋まるようです。赤いマスが「〇ち」となることに注目して考えましょう。"]
       },
       paperPuzzle: {
         text: "（ダミー）スピーカーのところに置かれている紙の謎",
@@ -48,7 +48,7 @@ const CONTENT = {
       locationRiddle: {
         image: "assets/round3_quiz.png",
         text: "画像の謎を解いて、正解の場所（家電）まで行こう。答え：レンジ",
-        hints: []
+        hints: ["まずは上の文字の中から「正しい向き」、すなわち回転していない文字を読んでみましょう。新たな指示が出てくるはずです。読むべき文字が見つからない場合は、画像全体をよく見てみましょう。"]
       },
       paperPuzzle: {
         text: "（ダミー）レンジのところに置かれている紙の謎",
