@@ -1,9 +1,9 @@
 // content.js
 // 問題文・答え（コンテンツ）を定義するファイル。app.js（ロジック本体）には触れず、
 // このファイルの値を書き換えるだけで謎の内容を差し替えられる。
-// 現時点はBDAY26-012〜015（作問）が未完了のため、すべてダミー値。
-// BDAY26-017でラウンド2〜7を追加し、BDAY26-018でランチ後謎・美術館ガイドの
-// 実データを、BDAY26-019で分岐謎・エンディングの実データを流し込む。
+// ラウンド1〜3のlocationRiddle（画像謎の答え＝家電の場所）は確定済み。
+// paperPuzzle（現地の紙に書かれた謎）・ラウンド4〜7・ランチ後謎以降はダミー値。
+// locationRiddleの画像ファイルは `assets/round{n}_quiz.png` に配置する（未配置）。
 
 const CONTENT = {
   kickoff: {
@@ -15,16 +15,46 @@ const CONTENT = {
     countdownTargetISO: "2026-09-19T09:00:00+09:00"
   },
   rounds: [
-    // ラウンド1のみ（動作確認用の最小構成）。BDAY26-017で2〜7を追加する
+    // locationRiddle：画像謎を解いて正解の家電がある場所まで移動するステップ（アプリへの回答入力なし）
+    // paperPuzzle：現地の紙に書かれた謎に回答するステップ（answerをアプリに入力）
+    // ラウンド4〜7はBDAY26-017で追加する
     {
       id: "round1",
       locationRiddle: {
-        text: "（ダミー）行ってきますの前も、ただいまの後も、必ず立ち寄る、玄関にある小さな家。さて、どこでしょう？",
-        hints: ["ヒント1（ダミー）", "ヒント2（ダミー）", "ヒント3（ダミー）"]
+        image: "assets/round1_quiz.png",
+        text: "画像の謎を解いて、正解の場所（家電）まで行こう。答え：冷蔵庫",
+        hints: []
       },
       paperPuzzle: {
+        text: "（ダミー）冷蔵庫のところに置かれている紙の謎",
         answer: "にがつついたち",
         hints: ["ヒント1（ダミー）", "ヒント2（ダミー）", "ヒント3（ダミー）"]
+      }
+    },
+    {
+      id: "round2",
+      locationRiddle: {
+        image: "assets/round2_quiz.png",
+        text: "画像の謎を解いて、正解の場所（家電）まで行こう。答え：スピーカー",
+        hints: []
+      },
+      paperPuzzle: {
+        text: "（ダミー）スピーカーのところに置かれている紙の謎",
+        answer: "（ダミー）",
+        hints: []
+      }
+    },
+    {
+      id: "round3",
+      locationRiddle: {
+        image: "assets/round3_quiz.png",
+        text: "画像の謎を解いて、正解の場所（家電）まで行こう。答え：レンジ",
+        hints: []
+      },
+      paperPuzzle: {
+        text: "（ダミー）レンジのところに置かれている紙の謎",
+        answer: "（ダミー）",
+        hints: []
       }
     }
   ],
@@ -77,6 +107,8 @@ const CONTENT = {
 const ARCHIVE_INDEX = [
   { key: "kickoff", label: "キックオフ" },
   { key: "round1", label: "ラウンド1" },
+  { key: "round2", label: "ラウンド2" },
+  { key: "round3", label: "ラウンド3" },
   { key: "milestoneReveal", label: "ポスト発見" },
   { key: "dressCode", label: "着替え指示" },
   { key: "lunchRiddle", label: "ランチ後の謎" },

@@ -7,6 +7,7 @@ const STORAGE_KEY = "bday26_progress";
 const DEFAULT_STATE = {
   currentScreen: "kickoff",
   currentRoundIndex: 0,
+  roundStep: "location",
   branchChoice: null,
   hintLevelByStep: {},
   gameCompleted: false
@@ -182,10 +183,36 @@ function renderRound() {
     goto("milestoneReveal");
     return;
   }
+  if ((state.roundStep || "location") === "location") {
+    renderRoundLocation(round);
+  } else {
+    renderRoundPaper(round);
+  }
+}
 
+// 家電（家の中の場所）を示す謎画像を見て、正解の場所まで移動するステップ。
+// この謎自体はアプリへの回答入力を行わない（現地の紙に書かれた別の謎に回答する）。
+function renderRoundLocation(round) {
   app.appendChild(el("h2", { text: `ラウンド${state.currentRoundIndex + 1}` }));
+  if (round.locationRiddle.image) {
+    const img = document.createElement("img");
+    img.src = round.locationRiddle.image;
+    img.alt = "謎の画像";
+    app.appendChild(img);
+  }
   app.appendChild(el("p", { text: round.locationRiddle.text }));
-  app.appendChild(renderHints(round.id, round.locationRiddle.hints));
+  app.appendChild(renderHints(`${round.id}_location`, round.locationRiddle.hints));
+  app.appendChild(el("button", {
+    text: "次へ（正解の場所に着いたら）",
+    onClick: () => goto("round", { roundStep: "paper" })
+  }));
+}
+
+// 現地の紙に書かれた謎に回答するステップ。
+function renderRoundPaper(round) {
+  app.appendChild(el("h2", { text: `ラウンド${state.currentRoundIndex + 1}：紙の謎` }));
+  app.appendChild(el("p", { text: round.paperPuzzle.text }));
+  app.appendChild(renderHints(`${round.id}_paper`, round.paperPuzzle.hints));
 
   const input = document.createElement("input");
   input.placeholder = "合言葉を入力";
@@ -199,7 +226,7 @@ function renderRound() {
         if (isLast) {
           goto("milestoneReveal");
         } else {
-          goto("round", { currentRoundIndex: state.currentRoundIndex + 1 });
+          goto("round", { currentRoundIndex: state.currentRoundIndex + 1, roundStep: "location" });
         }
       } else {
         feedback.textContent = "ちがうみたい。もう一度！";
@@ -388,7 +415,10 @@ function renderArchiveDetail() {
   const key = state.currentArchiveKey;
   let text = "（内容なし）";
   if (key === "kickoff") text = CONTENT.kickoff.screens.join("\n");
-  else if (key === "round1") text = CONTENT.rounds[0].locationRiddle.text;
+  else if (/^round\d+$/.test(key)) {
+    const round = CONTENT.rounds.find((r) => r.id === key);
+    if (round) text = `${round.locationRiddle.text}\n\n（紙の謎）${round.paperPuzzle.text}`;
+  }
   else if (key === "milestoneReveal") text = CONTENT.milestoneReveal.text;
   else if (key === "dressCode") text = CONTENT.dressCode.instructionText;
   else if (key === "lunchRiddle") text = CONTENT.lunchRiddle.text;
