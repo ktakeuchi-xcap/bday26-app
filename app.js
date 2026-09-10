@@ -62,12 +62,30 @@ function transition(patch) {
 
 // 画面（ページ）単位の履歴。ヒント開示等、画面が変わらない更新はtransition()を直接使い、
 // 履歴には積まない。goto()で画面が変わる操作だけを1ページとして記録する。
-let backStack = [];
-let forwardStack = [];
+// リロードしても履歴が消えないよう、localStorageに永続化する。
+const NAV_STORAGE_KEY = "bday26_navstacks";
+
+function loadNavStacks() {
+  try {
+    const raw = localStorage.getItem(NAV_STORAGE_KEY);
+    if (!raw) return { backStack: [], forwardStack: [] };
+    const parsed = JSON.parse(raw);
+    return { backStack: parsed.backStack || [], forwardStack: parsed.forwardStack || [] };
+  } catch (e) {
+    return { backStack: [], forwardStack: [] };
+  }
+}
+
+function saveNavStacks() {
+  localStorage.setItem(NAV_STORAGE_KEY, JSON.stringify({ backStack, forwardStack }));
+}
+
+let { backStack, forwardStack } = loadNavStacks();
 
 function goto(screen, extra = {}) {
   backStack.push(state);
   forwardStack = [];
+  saveNavStacks();
   transition({ currentScreen: screen, ...extra });
 }
 
@@ -76,6 +94,7 @@ function goBack() {
   forwardStack.push(state);
   state = backStack.pop();
   saveState(state);
+  saveNavStacks();
   render();
 }
 
@@ -84,6 +103,7 @@ function goForward() {
   backStack.push(state);
   state = forwardStack.pop();
   saveState(state);
+  saveNavStacks();
   render();
 }
 
@@ -190,9 +210,23 @@ function renderRound() {
   }
 }
 
+// 宝探しパートの進捗バー。1ラウンド＝画像謎＋紙の謎の2問として、全ラウンド数×2問中の現在位置を表示する。
+function renderTreasureHuntProgress(stepOffset) {
+  const total = CONTENT.rounds.length * 2;
+  const current = state.currentRoundIndex * 2 + stepOffset;
+  const bar = el("div", { className: "progress" });
+  const fill = el("div", { className: "progress-fill" });
+  fill.style.width = `${(current / total) * 100}%`;
+  bar.appendChild(fill);
+  const label = el("p", { className: "progress-label", text: `第${current}問 / 全${total}問` });
+  const wrapper = el("div", {}, [bar, label]);
+  return wrapper;
+}
+
 // 家電（家の中の場所）を示す謎画像を見て、正解の場所まで移動するステップ。
 // この謎自体はアプリへの回答入力を行わない（現地の紙に書かれた別の謎に回答する）。
 function renderRoundLocation(round) {
+  app.appendChild(renderTreasureHuntProgress(1));
   app.appendChild(el("h2", { text: `ラウンド${state.currentRoundIndex + 1}` }));
   if (round.locationRiddle.image) {
     const img = document.createElement("img");
@@ -210,6 +244,7 @@ function renderRoundLocation(round) {
 
 // 現地の紙に書かれた謎に回答するステップ。
 function renderRoundPaper(round) {
+  app.appendChild(renderTreasureHuntProgress(2));
   app.appendChild(el("h2", { text: `ラウンド${state.currentRoundIndex + 1}：紙の謎` }));
   app.appendChild(el("p", { text: round.paperPuzzle.text }));
   app.appendChild(renderHints(`${round.id}_paper`, round.paperPuzzle.hints));
@@ -405,6 +440,7 @@ function renderArchiveList() {
         state = resetState();
         backStack = [];
         forwardStack = [];
+        saveNavStacks();
         render();
       }
     }
