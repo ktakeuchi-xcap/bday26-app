@@ -1,9 +1,8 @@
 // content.js
 // 問題文・答え（コンテンツ）を定義するファイル。app.js（ロジック本体）には触れず、
 // このファイルの値を書き換えるだけで謎の内容を差し替えられる。
-// ラウンド1〜3のlocationRiddle（画像謎の答え＝家電の場所）は確定済み。
+// ラウンド1〜3のlocationRiddle（画像謎・答え＝家電の場所）は確定済み。画像は`assets/round{n}_quiz.png`。
 // paperPuzzle（現地の紙に書かれた謎）・ラウンド4〜7・ランチ後謎以降はダミー値。
-// locationRiddleの画像ファイルは `assets/round{n}_quiz.png` に配置する（未配置）。
 
 const CONTENT = {
   kickoff: {
