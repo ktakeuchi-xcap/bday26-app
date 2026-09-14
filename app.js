@@ -405,6 +405,7 @@ function renderBranchPlant() {
 
 function renderBranchDinner() {
   app.appendChild(el("p", { text: CONTENT.branchRiddles.toDinner.text }));
+  app.appendChild(renderHints("toDinner", CONTENT.branchRiddles.toDinner.hints));
   const input = document.createElement("input");
   input.placeholder = "合言葉を入力";
   const feedback = el("p", { className: "feedback" });
