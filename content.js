@@ -85,13 +85,13 @@ const CONTENT = {
     // 美術館後の自動分岐判定
     cutoffTime: "17:00"
   },
+  // 美術館後、garage TOKYO（丸ビル）への案内。謎はなく、場所の案内のみ。BDAY26-015で確定
+  plantShopGuide: {
+    text: "次は、植物と暮らすことをコンセプトにしたお店「garage TOKYO」へ向かいましょう。東京駅直結、丸ビル4Fです。",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=garage%20TOKYO%20%E4%B8%B8%E3%83%93%E3%83%AB"
+  },
   branchRiddles: {
     // 美術館後の分岐謎。BDAY26-015で確定
-    toPlantShop: {
-      text: "（ダミー）植物と暮らすことをコンセプトにしたお店。東京駅直結のあるビルの中にあります。ビルの名前は？",
-      answer: "丸ビル",
-      hints: []
-    },
     toDinner: {
       text: "（ダミー）東京で育ち、沖縄で腕を磨き、地元・人形町に凱旋してきたシェフのお店。お店の名前は？",
       answer: "安室",
@@ -114,7 +114,7 @@ const ARCHIVE_INDEX = [
   { key: "dressCode", label: "着替え指示" },
   { key: "lunchRiddle", label: "ランチ後の謎" },
   { key: "museumGuide", label: "美術館鑑賞ガイド" },
-  { key: "toPlantShop", label: "garage TOKYOへの謎" },
+  { key: "toPlantShop", label: "garage TOKYOへの案内" },
   { key: "toDinner", label: "安室への謎" },
   { key: "ending", label: "エンディング" }
 ];

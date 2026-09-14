@@ -387,23 +387,20 @@ function renderMuseumGuideDetail() {
   app.appendChild(el("button", { text: "一覧に戻る", onClick: () => goto("museumGuideList", { viewingFromArchive: state.viewingFromArchive }) }));
 }
 
+// garage TOKYOへの案内（謎なし）。地図を開いて、着いたら次へ進む。
 function renderBranchPlant() {
-  app.appendChild(el("p", { text: CONTENT.branchRiddles.toPlantShop.text }));
-  const input = document.createElement("input");
-  input.placeholder = "合言葉を入力";
-  const feedback = el("p", { className: "feedback" });
-  app.appendChild(input);
+  app.appendChild(el("p", { text: CONTENT.plantShopGuide.text }));
+  const link = document.createElement("a");
+  link.href = CONTENT.plantShopGuide.mapUrl;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = "地図を開く";
+  link.className = "link";
+  app.appendChild(link);
   app.appendChild(el("button", {
-    text: "決定",
-    onClick: () => {
-      if (checkAnswer(input.value, CONTENT.branchRiddles.toPlantShop.answer)) {
-        goto("branchDinner");
-      } else {
-        feedback.textContent = "ちがうみたい。もう一度！";
-      }
-    }
+    text: "着いたら次へ",
+    onClick: () => goto("branchDinner")
   }));
-  app.appendChild(feedback);
 }
 
 function renderBranchDinner() {
@@ -480,7 +477,7 @@ function renderArchiveDetail() {
   else if (key === "dressCode") text = CONTENT.dressCode.instructionText;
   else if (key === "lunchRiddle") text = CONTENT.lunchRiddle.text;
   // museumGuideはrenderArchiveListからmuseumGuideListへ直接遷移するため、ここには来ない
-  else if (key === "toPlantShop") text = CONTENT.branchRiddles.toPlantShop.text;
+  else if (key === "toPlantShop") text = CONTENT.plantShopGuide.text;
   else if (key === "toDinner") text = CONTENT.branchRiddles.toDinner.text;
   else if (key === "ending") text = CONTENT.ending.text;
 
