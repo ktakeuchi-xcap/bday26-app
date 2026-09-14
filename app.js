@@ -8,6 +8,7 @@ const DEFAULT_STATE = {
   currentScreen: "kickoff",
   currentRoundIndex: 0,
   roundStep: "location",
+  lunchRiddleStep: "answer",
   branchChoice: null,
   hintLevelByStep: {},
   gameCompleted: false
@@ -312,6 +313,10 @@ function renderDressCode() {
 }
 
 function renderLunchRiddle() {
+  if (state.lunchRiddleStep === "map") {
+    renderLunchRiddleMap();
+    return;
+  }
   app.appendChild(el("p", { text: CONTENT.lunchRiddle.text }));
   app.appendChild(renderHints("lunchRiddle", CONTENT.lunchRiddle.hints));
   const input = document.createElement("input");
@@ -322,13 +327,29 @@ function renderLunchRiddle() {
     text: "決定",
     onClick: () => {
       if (checkAnswer(input.value, CONTENT.lunchRiddle.answer)) {
-        goto("museumGuideList");
+        goto("lunchRiddle", { lunchRiddleStep: "map" });
       } else {
         feedback.textContent = "ちがうみたい。もう一度！";
       }
     }
   }));
   app.appendChild(feedback);
+}
+
+// 正解後、行き先（三菱一号館美術館）のGoogle Mapを開くリンクを表示する。
+function renderLunchRiddleMap() {
+  app.appendChild(el("p", { text: "正解！このリンクから地図を開いて向かいましょう。" }));
+  const link = document.createElement("a");
+  link.href = CONTENT.lunchRiddle.mapUrl;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = "地図を開く";
+  link.className = "link";
+  app.appendChild(link);
+  app.appendChild(el("button", {
+    text: "美術館に着いたら次へ",
+    onClick: () => goto("museumGuideList")
+  }));
 }
 
 function renderMuseumGuideList() {
