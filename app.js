@@ -146,13 +146,12 @@ function renderNavBar() {
   if (backStack.length === 0 && forwardStack.length === 0) return;
   const bar = el("div", { className: "navbar" });
   if (backStack.length > 0) {
-    // 美術館鑑賞ガイド（一覧・詳細）からの「戻る」は、実際の履歴を1つずつ遡り、
-    // 直前のクイズ（ランチ後の謎）の正解画面まで移動する（正解画面自体からの「戻る」は
-    // 通常のgoBackに戻るため、さらに1つ前＝クイズの問題画面へ正しく遷移できる）
+    // 美術館鑑賞ガイド（一覧・詳細）からの「戻る」は、館内を何度行き来していても、
+    // 実際の履歴を1つずつ遡って直前の入場チケット画面まで移動する
     const isLiveMuseumGuide =
       (state.currentScreen === "museumGuideList" || state.currentScreen === "museumGuideDetail") &&
       !state.viewingFromArchive;
-    const onBackClick = isLiveMuseumGuide ? goBackToQuizResult : goBack;
+    const onBackClick = isLiveMuseumGuide ? goBackToMuseumTicket : goBack;
     bar.appendChild(el("button", { text: "← 1ページ戻る", className: "nav", onClick: onBackClick }));
   }
   if (forwardStack.length > 0) {
@@ -161,12 +160,12 @@ function renderNavBar() {
   app.appendChild(bar);
 }
 
-// backStackを実際の履歴として1段ずつ遡り、直前のクイズ正解画面（lunchRiddle・mapステップ）まで移動する。
-function goBackToQuizResult() {
+// backStackを実際の履歴として1段ずつ遡り、直前の入場チケット画面まで移動する。
+function goBackToMuseumTicket() {
   while (backStack.length > 0) {
     forwardStack.push(state);
     state = backStack.pop();
-    if (state.currentScreen === "lunchRiddle" && state.lunchRiddleStep === "map") {
+    if (state.currentScreen === "museumTicket") {
       break;
     }
   }
@@ -469,12 +468,10 @@ function renderLunchRiddle() {
   });
   app.appendChild(grid);
 
-  if (!showArtwork) {
-    app.appendChild(el("button", {
-      text: "下部に代表的な作品は...？",
-      onClick: () => transition({ lunchQuizShowArtwork: true })
-    }));
-  }
+  app.appendChild(el("button", {
+    text: showArtwork ? "画家の顔写真を表示する" : "代表的な作品は...？",
+    onClick: () => transition({ lunchQuizShowArtwork: !showArtwork })
+  }));
 
   const submitBtn = el("button", {
     text: "回答する",
