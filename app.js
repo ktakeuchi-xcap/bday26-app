@@ -161,28 +161,37 @@ function renderUnknown() {
 function renderKickoff() {
   const target = new Date(CONTENT.kickoff.countdownTargetISO);
 
-  // 各行を1画面ずつ、スクロールに応じてフェードイン/アウトさせる。
-  // 最後のセクションにカウントダウンを置き、スクロールし切った状態で表示が残るようにする。
-  const scrollContainer = el("div", { className: "kickoff-scroll" });
-  CONTENT.kickoff.screens.forEach((text) => {
-    scrollContainer.appendChild(el("section", { className: "kickoff-line", text }));
-  });
-  const countdownSection = el("section", { className: "kickoff-line kickoff-countdown-section" });
-  const countdownEl = el("p", { className: "countdown" });
-  countdownSection.appendChild(countdownEl);
-  scrollContainer.appendChild(countdownSection);
-  app.appendChild(scrollContainer);
+  // テキストの行数＋カウントダウンの分だけ縦にスクロール距離を確保し、
+  // 中身（.kickoff-pin）はposition:stickyで画面に固定したまま、
+  // スクロール位置に応じて同じ場所でテキストをフェードイン/アウトさせる。
+  const lineCount = CONTENT.kickoff.screens.length + 1; // +1はカウントダウン分
+  const wrapper = el("div", { className: "kickoff-wrapper" });
+  wrapper.style.height = `${lineCount * 100}vh`;
 
-  const sections = scrollContainer.querySelectorAll(".kickoff-line");
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        entry.target.classList.toggle("in-view", entry.isIntersecting);
-      });
-    },
-    { threshold: 0.5 }
-  );
-  sections.forEach((section) => observer.observe(section));
+  const pin = el("div", { className: "kickoff-pin" });
+  const lines = CONTENT.kickoff.screens.map((text) => el("p", { className: "kickoff-line", text }));
+  const countdownEl = el("p", { className: "kickoff-line countdown" });
+  lines.push(countdownEl);
+  lines.forEach((line) => pin.appendChild(line));
+
+  const guide = el("p", { className: "kickoff-scroll-guide", text: "↓ スクロール" });
+  pin.appendChild(guide);
+
+  const restartBtn = el("button", {
+    text: "はじめから",
+    className: "kickoff-restart",
+    onClick: () => window.scrollTo({ top: 0, behavior: "smooth" })
+  });
+  const nextBtn = el("button", {
+    text: "次へ進む",
+    className: "kickoff-next",
+    onClick: () => goto("round", { currentRoundIndex: 0 })
+  });
+  pin.appendChild(restartBtn);
+  pin.appendChild(nextBtn);
+
+  wrapper.appendChild(pin);
+  app.appendChild(wrapper);
 
   function updateCountdown() {
     const diff = target - new Date();
@@ -198,20 +207,21 @@ function renderKickoff() {
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // 右下：テキストを最初から読み直すボタン
-  app.appendChild(el("button", {
-    text: "はじめから",
-    className: "kickoff-restart",
-    onClick: () => sections[0].scrollIntoView({ behavior: "smooth" })
-  }));
+  function onScroll() {
+    const viewportHeight = window.innerHeight;
+    const rect = wrapper.getBoundingClientRect();
+    const maxScroll = wrapper.offsetHeight - viewportHeight;
+    const scrolled = Math.min(Math.max(-rect.top, 0), maxScroll);
+    const index = Math.min(lines.length - 1, Math.floor(scrolled / viewportHeight));
+    const atEnd = scrolled >= maxScroll - 1;
 
-  // 「開始まで」が0になったらラウンド1へ進む「次へ進む」ボタンを表示する仕様を想定。
-  // 現状はテスト用のため、時刻に関わらず常時表示する。
-  app.appendChild(el("button", {
-    text: "次へ進む",
-    className: "kickoff-next",
-    onClick: () => goto("round", { currentRoundIndex: 0 })
-  }));
+    lines.forEach((line, i) => line.classList.toggle("in-view", i === index));
+    guide.style.display = atEnd ? "none" : "block";
+    restartBtn.style.display = atEnd ? "block" : "none";
+    nextBtn.style.display = atEnd ? "block" : "none";
+  }
+  window.addEventListener("scroll", onScroll);
+  onScroll();
 }
 
 function renderRound() {
