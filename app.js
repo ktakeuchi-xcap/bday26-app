@@ -12,6 +12,7 @@ const DEFAULT_STATE = {
   lunchQuizShowArtwork: false,
   lunchQuizSelectedOption: null,
   lunchQuizAnswered: false,
+  lunchQuizCorrect: false,
   branchChoice: null,
   hintLevelByStep: {},
   hintsCollapsedByStep: {},
@@ -197,6 +198,14 @@ function showCorrectAnimation(onDone) {
     overlay.remove();
     onDone();
   }, 900);
+}
+
+// 正解演出のみを表示し、自動では次の画面へ遷移しない版。
+// 演出が終わった後、呼び出し側で「次へ」ボタンを表示して手動で進めてもらう。
+function showCorrectOverlayOnly() {
+  const overlay = el("div", { className: "correct-overlay", text: "正解！" });
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.remove(), 900);
 }
 
 function renderUnknown() {
@@ -499,14 +508,21 @@ function renderLunchRiddle() {
     onClick: () => transition({ lunchQuizShowArtwork: !showArtwork })
   }));
 
+  if (state.lunchQuizCorrect) {
+    // 正解演出は既に表示済み。ここでは手動で次へ進むボタンのみ表示する
+    app.appendChild(el("button", {
+      text: "次へ",
+      onClick: () => goto("lunchRiddle", { lunchRiddleStep: "map" })
+    }));
+    return;
+  }
+
   const submitBtn = el("button", {
     text: "回答する",
     onClick: () => {
       if (selectedId === CONTENT.lunchRiddle.correctOptionId) {
-        transition({ lunchQuizAnswered: true });
-        showCorrectAnimation(() => {
-          goto("lunchRiddle", { lunchRiddleStep: "map" });
-        });
+        transition({ lunchQuizAnswered: true, lunchQuizCorrect: true });
+        showCorrectOverlayOnly();
       } else {
         transition({ lunchQuizAnswered: true });
       }
