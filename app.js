@@ -257,7 +257,6 @@ function renderPostDiscovery() {
   renderScrollStory(CONTENT.postDiscovery.screens, el("div"), [dressBtn]);
 }
 
-// 会場への行き方（仮実装：表示方法は別途検討中）
 // 会場への行き方：全Stepを縦に並べ、スクロールに応じて上から順にフェードインさせる一覧リスト。
 function renderVenueGuide() {
   app.appendChild(el("h2", { text: "会場への行き方" }));
@@ -279,7 +278,7 @@ function renderVenueGuide() {
   );
   lines.forEach((line) => observer.observe(line));
 
-  app.appendChild(el("button", { text: "着いたら次へ", onClick: () => goto("lunchRiddle") }));
+  app.appendChild(el("button", { text: "ランチを食べ終わった！", onClick: () => goto("lunchRiddle") }));
 }
 
 function renderRound() {
