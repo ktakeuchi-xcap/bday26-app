@@ -120,8 +120,8 @@ function render() {
   const renderers = {
     kickoff: renderKickoff,
     round: renderRound,
-    milestoneReveal: renderMilestoneReveal,
-    dressCode: renderDressCode,
+    postDiscovery: renderPostDiscovery,
+    venueGuide: renderVenueGuide,
     lunchRiddle: renderLunchRiddle,
     museumGuideList: renderMuseumGuideList,
     museumGuideDetail: renderMuseumGuideDetail,
@@ -173,40 +173,51 @@ function renderUnknown() {
   app.appendChild(el("p", { text: `未知の画面です: ${state.currentScreen}` }));
 }
 
-function renderKickoff() {
-  const target = new Date(CONTENT.kickoff.countdownTargetISO);
+// テキストを1行ずつ、ピン留め（position:sticky）した同じ位置でフェードイン/アウトさせる共通演出。
+// lines：本文の行（配列）。finalLine：最後に表示する要素（本文と同じ見た目でフェード対象に含む）。
+// extraButtons：ガイド同様、スクロールし切った時だけ表示するボタン（.scroll-final-btnを自動付与）。
+function renderScrollStory(lines, finalLine, extraButtons = []) {
+  const allLines = [...lines.map((text) => el("p", { className: "kickoff-line", text })), finalLine];
+  finalLine.classList.add("kickoff-line");
 
-  // テキストの行数＋カウントダウンの分だけ縦にスクロール距離を確保し、
-  // 中身（.kickoff-pin）はposition:stickyで画面に固定したまま、
-  // スクロール位置に応じて同じ場所でテキストをフェードイン/アウトさせる。
-  const lineCount = CONTENT.kickoff.screens.length + 1; // +1はカウントダウン分
   const wrapper = el("div", { className: "kickoff-wrapper" });
-  wrapper.style.height = `${lineCount * 100}vh`;
+  wrapper.style.height = `${allLines.length * 100}vh`;
 
   const pin = el("div", { className: "kickoff-pin" });
-  const lines = CONTENT.kickoff.screens.map((text) => el("p", { className: "kickoff-line", text }));
-  const countdownEl = el("p", { className: "kickoff-line countdown" });
-  lines.push(countdownEl);
-  lines.forEach((line) => pin.appendChild(line));
+  allLines.forEach((line) => pin.appendChild(line));
 
   const guide = el("p", { className: "kickoff-scroll-guide", text: "↓ スクロール" });
   pin.appendChild(guide);
 
-  const restartBtn = el("button", {
-    text: "はじめから",
-    className: "kickoff-restart",
-    onClick: () => window.scrollTo({ top: 0, behavior: "smooth" })
+  extraButtons.forEach((btn) => {
+    btn.classList.add("scroll-final-btn");
+    pin.appendChild(btn);
   });
-  const nextBtn = el("button", {
-    text: "次へ進む",
-    className: "kickoff-next",
-    onClick: () => goto("round", { currentRoundIndex: 0 })
-  });
-  pin.appendChild(restartBtn);
-  pin.appendChild(nextBtn);
 
   wrapper.appendChild(pin);
   app.appendChild(wrapper);
+
+  function onScroll() {
+    const viewportHeight = window.innerHeight;
+    const rect = wrapper.getBoundingClientRect();
+    const maxScroll = wrapper.offsetHeight - viewportHeight;
+    const scrolled = Math.min(Math.max(-rect.top, 0), maxScroll);
+    const index = Math.min(allLines.length - 1, Math.floor(scrolled / viewportHeight));
+    const atEnd = scrolled >= maxScroll - 1;
+
+    allLines.forEach((line, i) => line.classList.toggle("in-view", i === index));
+    guide.style.display = atEnd ? "none" : "block";
+    extraButtons.forEach((btn) => {
+      btn.style.display = atEnd ? "block" : "none";
+    });
+  }
+  window.addEventListener("scroll", onScroll);
+  onScroll();
+}
+
+function renderKickoff() {
+  const target = new Date(CONTENT.kickoff.countdownTargetISO);
+  const countdownEl = el("p", { className: "countdown" });
 
   function updateCountdown() {
     const diff = target - new Date();
@@ -222,27 +233,44 @@ function renderKickoff() {
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  function onScroll() {
-    const viewportHeight = window.innerHeight;
-    const rect = wrapper.getBoundingClientRect();
-    const maxScroll = wrapper.offsetHeight - viewportHeight;
-    const scrolled = Math.min(Math.max(-rect.top, 0), maxScroll);
-    const index = Math.min(lines.length - 1, Math.floor(scrolled / viewportHeight));
-    const atEnd = scrolled >= maxScroll - 1;
+  const restartBtn = el("button", {
+    text: "はじめから",
+    className: "kickoff-restart",
+    onClick: () => window.scrollTo({ top: 0, behavior: "smooth" })
+  });
+  const nextBtn = el("button", {
+    text: "次へ進む",
+    className: "kickoff-next",
+    onClick: () => goto("round", { currentRoundIndex: 0 })
+  });
 
-    lines.forEach((line, i) => line.classList.toggle("in-view", i === index));
-    guide.style.display = atEnd ? "none" : "block";
-    restartBtn.style.display = atEnd ? "block" : "none";
-    nextBtn.style.display = atEnd ? "block" : "none";
-  }
-  window.addEventListener("scroll", onScroll);
-  onScroll();
+  renderScrollStory(CONTENT.kickoff.screens, countdownEl, [restartBtn, nextBtn]);
+}
+
+// ポスト発見〜着替え指示の統合画面。キックオフと同じピン留めスクロール演出。
+function renderPostDiscovery() {
+  const dressBtn = el("button", {
+    text: "着替えました",
+    className: "kickoff-next",
+    onClick: () => goto("venueGuide")
+  });
+  renderScrollStory(CONTENT.postDiscovery.screens, el("div"), [dressBtn]);
+}
+
+// 会場への行き方（仮実装：表示方法は別途検討中）
+function renderVenueGuide() {
+  app.appendChild(el("h2", { text: "会場への行き方" }));
+  CONTENT.venueGuide.steps.forEach((step, i) => {
+    app.appendChild(el("p", { text: `Step ${i + 1}：${step}` }));
+  });
+  app.appendChild(el("p", { text: `ランチ：${CONTENT.venueGuide.venueName}` }));
+  app.appendChild(el("button", { text: "着いたら次へ", onClick: () => goto("lunchRiddle") }));
 }
 
 function renderRound() {
   const round = CONTENT.rounds[state.currentRoundIndex];
   if (!round) {
-    goto("milestoneReveal");
+    goto("postDiscovery");
     return;
   }
   if ((state.roundStep || "location") === "location") {
@@ -302,7 +330,7 @@ function renderRoundPaper(round) {
         showCorrectAnimation(() => {
           const isLast = state.currentRoundIndex >= CONTENT.rounds.length - 1;
           if (isLast) {
-            goto("milestoneReveal");
+            goto("postDiscovery");
           } else {
             goto("round", { currentRoundIndex: state.currentRoundIndex + 1, roundStep: "location" });
           }
@@ -352,23 +380,6 @@ function renderHints(stepId, hints) {
     }));
   }
   return container;
-}
-
-function renderMilestoneReveal() {
-  app.appendChild(el("p", { text: CONTENT.milestoneReveal.text }));
-  app.appendChild(el("button", { text: "次へ", onClick: () => goto("dressCode") }));
-}
-
-function renderDressCode() {
-  app.appendChild(el("p", { text: CONTENT.dressCode.instructionText }));
-  app.appendChild(el("button", {
-    text: "着替えました",
-    onClick: () => {
-      app.innerHTML = "";
-      app.appendChild(el("p", { text: CONTENT.dressCode.completedText }));
-      app.appendChild(el("button", { text: "（ランチ後にここを開く）次へ", onClick: () => goto("lunchRiddle") }));
-    }
-  }));
 }
 
 function renderLunchRiddle() {
@@ -533,8 +544,10 @@ function renderArchiveDetail() {
     const round = CONTENT.rounds.find((r) => r.id === key);
     if (round) text = `${round.locationRiddle.text}\n\n（紙の謎）${round.paperPuzzle.text}`;
   }
-  else if (key === "milestoneReveal") text = CONTENT.milestoneReveal.text;
-  else if (key === "dressCode") text = CONTENT.dressCode.instructionText;
+  else if (key === "postDiscovery") text = CONTENT.postDiscovery.screens.join("\n");
+  else if (key === "venueGuide") {
+    text = `${CONTENT.venueGuide.steps.map((s, i) => `Step ${i + 1}：${s}`).join("\n")}\nランチ：${CONTENT.venueGuide.venueName}`;
+  }
   else if (key === "lunchRiddle") text = CONTENT.lunchRiddle.text;
   // museumGuideはrenderArchiveListからmuseumGuideListへ直接遷移するため、ここには来ない
   else if (key === "toPlantShop") text = CONTENT.plantShopGuide.text;
