@@ -127,6 +127,7 @@ function render() {
     postDiscovery: renderPostDiscovery,
     venueGuide: renderVenueGuide,
     lunchIntro: renderLunchIntro,
+    plantIntro: renderPlantIntro,
     dinnerIntro: renderDinnerIntro,
     lunchRiddle: renderLunchRiddle,
     museumTicket: renderMuseumTicket,
@@ -333,16 +334,15 @@ function renderLunchIntro() {
   renderScrollStory(CONTENT.lunchIntro.screens, el("div"), [nextBtn]);
 }
 
-// 美術館鑑賞ガイド後、ディナーへの導入メッセージ。キックオフと同じピン留めスクロール演出。
+// 美術館鑑賞ガイド後、garage TOKYOへの導入メッセージ（17:00より前の分岐）。キックオフと同じピン留めスクロール演出。
+function renderPlantIntro() {
+  const nextBtn = el("button", { text: "次へ", className: "kickoff-next", onClick: () => goto("branchPlant") });
+  renderScrollStory(CONTENT.plantIntro.screens, el("div"), [nextBtn]);
+}
+
+// 美術館鑑賞ガイド後、ディナー（安室）への導入メッセージ（17:00以降の分岐）。キックオフと同じピン留めスクロール演出。
 function renderDinnerIntro() {
-  const nextBtn = el("button", {
-    text: "次へ",
-    className: "kickoff-next",
-    onClick: () => {
-      const branch = decideBranch(CONTENT.timeCheck.cutoffTime);
-      goto(branch === "plant" ? "branchPlant" : "branchDinner", { branchChoice: branch });
-    }
-  });
+  const nextBtn = el("button", { text: "次へ", className: "kickoff-next", onClick: () => goto("branchDinner") });
   renderScrollStory(CONTENT.dinnerIntro.screens, el("div"), [nextBtn]);
 }
 
@@ -578,7 +578,10 @@ function renderMuseumGuideList() {
   } else {
     app.appendChild(el("button", {
       text: "次へ",
-      onClick: () => goto("dinnerIntro")
+      onClick: () => {
+        const branch = decideBranch(CONTENT.timeCheck.cutoffTime);
+        goto(branch === "plant" ? "plantIntro" : "dinnerIntro", { branchChoice: branch });
+      }
     }));
   }
 }
@@ -599,12 +602,13 @@ function renderBranchPlant() {
   link.href = CONTENT.plantShopGuide.mapUrl;
   link.target = "_blank";
   link.rel = "noopener";
-  link.textContent = "地図を開く";
-  link.className = "link";
+  link.textContent = "garage TOKYOへ向かおう！";
+  link.className = "link map-link-button";
   app.appendChild(link);
   app.appendChild(el("button", {
     text: "着いたら次へ",
-    onClick: () => goto("branchDinner")
+    // 「この建物を探せ！」の直前には常にディナー前の導入メッセージを挟む
+    onClick: () => goto("dinnerIntro")
   }));
 }
 
@@ -710,6 +714,7 @@ function renderArchiveDetail() {
     text = `${CONTENT.venueGuide.steps.map((s, i) => `Step ${i + 1}：${s}`).join("\n")}\nランチ：${CONTENT.venueGuide.venueName}`;
   }
   else if (key === "lunchIntro") text = CONTENT.lunchIntro.screens.join("\n");
+  else if (key === "plantIntro") text = CONTENT.plantIntro.screens.join("\n");
   else if (key === "dinnerIntro") text = CONTENT.dinnerIntro.screens.join("\n");
   else if (key === "lunchRiddle") {
     text = `${CONTENT.lunchRiddle.questionText}\n${CONTENT.lunchRiddle.options.map((o) => `${o.id}. ${o.name}`).join(" / ")}`;

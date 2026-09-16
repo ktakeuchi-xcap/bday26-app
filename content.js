@@ -158,8 +158,17 @@ const CONTENT = {
     text: "30歳という新しい節目に、これから一緒に育てていく“家族”を迎えに行きませんか。次の行き先は、植物と暮らすことをコンセプトにしたお店「garage TOKYO」。東京駅直結、丸ビル4Fです。",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=garage%20TOKYO%20%E4%B8%B8%E3%83%93%E3%83%AB"
   },
+  plantIntro: {
+    // 美術館鑑賞ガイド後、garage TOKYOへの導入メッセージ（17:00より前の分岐）。確定
+    screens: [
+      "美術館では、お気に入りの作品を見つけることができたかな？",
+      "次は、30歳という節目に",
+      "これから一緒に育てていく\"家族\"を迎えに行きませんか。",
+      "次の行き先は、植物と暮らすことをコンセプトにしたお店「garage TOKYO」です。"
+    ]
+  },
   dinnerIntro: {
-    // 美術館鑑賞ガイド後、ディナーへの導入メッセージ。確定
+    // 美術館鑑賞ガイド後、ディナー（安室）への導入メッセージ（17:00以降の分岐）。確定
     screens: [
       "楽しめたかな？",
       "次はお待ちかね、ディナーの時間です！",
@@ -193,8 +202,9 @@ const ARCHIVE_INDEX = [
   { key: "lunchRiddle", label: "ランチ後の謎" },
   { key: "museumTicket", label: "入場チケット" },
   { key: "museumGuide", label: "美術館鑑賞ガイド（モネとルドン）" },
-  { key: "dinnerIntro", label: "ディナー前の導入" },
+  { key: "plantIntro", label: "garage TOKYO前の導入" },
   { key: "toPlantShop", label: "garage TOKYOへの案内" },
+  { key: "dinnerIntro", label: "ディナー前の導入" },
   { key: "toDinner", label: "安室への案内" },
   { key: "ending", label: "エンディング" }
 ];
