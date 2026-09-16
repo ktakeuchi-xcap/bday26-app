@@ -70,20 +70,6 @@
     color: #888;
     margin: 4px 0 12px;
   }
-  .debug-skip {
-    /* 動作確認用の隠しボタン。本番前に削除・無効化を検討 */
-    position: fixed;
-    left: 16px;
-    bottom: 16px;
-    width: auto;
-    padding: 4px 8px;
-    font-size: 0.7rem;
-    opacity: 0.15;
-    background: none;
-    border: none;
-    color: #999;
-    z-index: 10;
-  }
   .kickoff-scroll {
     display: block;
   }
@@ -110,6 +96,21 @@
     padding: 8px 14px;
     margin: 0;
     font-size: 0.85rem;
+    background: #a15c2c;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    z-index: 10;
+  }
+  .kickoff-next {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 10px 20px;
+    margin: 0;
+    font-size: 0.95rem;
     background: #a15c2c;
     color: #fff;
     border: none;

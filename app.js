@@ -160,13 +160,6 @@ function renderUnknown() {
 
 function renderKickoff() {
   const target = new Date(CONTENT.kickoff.countdownTargetISO);
-  const now = new Date();
-
-  if (now >= target) {
-    // カウントダウンが既に終わっている場合はそのままラウンド開始へ
-    goto("round", { currentRoundIndex: 0 });
-    return;
-  }
 
   // 各行を1画面ずつ、スクロールに応じてフェードイン/アウトさせる。
   // 最後のセクションにカウントダウンを置き、スクロールし切った状態で表示が残るようにする。
@@ -194,7 +187,7 @@ function renderKickoff() {
   function updateCountdown() {
     const diff = target - new Date();
     if (diff <= 0) {
-      goto("round", { currentRoundIndex: 0 });
+      countdownEl.textContent = "まもなく始まります";
       return;
     }
     const h = Math.floor(diff / 3600000);
@@ -212,11 +205,11 @@ function renderKickoff() {
     onClick: () => sections[0].scrollIntoView({ behavior: "smooth" })
   }));
 
-  // 動作確認用の隠しボタン。カウントダウンを待たずに進める。
-  // 目立たない見た目にしてあるが、本番公開前（BDAY26-020）には削除・無効化を検討すること
+  // 「開始まで」が0になったらラウンド1へ進む「次へ進む」ボタンを表示する仕様を想定。
+  // 現状はテスト用のため、時刻に関わらず常時表示する。
   app.appendChild(el("button", {
-    text: "・",
-    className: "debug-skip",
+    text: "次へ進む",
+    className: "kickoff-next",
     onClick: () => goto("round", { currentRoundIndex: 0 })
   }));
 }
