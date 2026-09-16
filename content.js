@@ -173,8 +173,7 @@ const CONTENT = {
     text: "この建物を探せ！（会場は8Fだよ）",
     image: "assets/branch_dinner/building.jpg",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=%E4%BA%BA%E5%BD%A2%E7%94%BA2%E4%B8%81%E7%9B%AE",
-    // ヒント押下時に地図を直接埋め込み表示する（Google Maps埋め込みURL）
-    hintMapEmbedUrl: "https://www.google.com/maps?q=%E4%BA%BA%E5%BD%A2%E7%94%BA2%E4%B8%81%E7%9B%AE7&output=embed"
+    hintMapUrl: "https://www.google.com/maps/search/?api=1&query=%E4%BA%BA%E5%BD%A2%E7%94%BA2%E4%B8%81%E7%9B%AE7"
   },
   ending: {
     // 安室到着時のエンドロール。BDAY26-015で確定

@@ -622,17 +622,22 @@ function renderBranchDinner() {
   link.target = "_blank";
   link.rel = "noopener";
   link.textContent = "会場は、このエリアの中にあるよ！";
-  link.className = "link";
+  link.className = "link map-link-button";
   app.appendChild(link);
 
   if (state.branchDinnerHintShown) {
-    // 「ヒントの地図を開く」は別タブへのリンクではなく、地図をその場に埋め込んで表示する
-    const iframe = document.createElement("iframe");
-    iframe.src = CONTENT.toDinnerGuide.hintMapEmbedUrl;
-    iframe.className = "map-embed";
-    iframe.loading = "lazy";
-    iframe.referrerPolicy = "no-referrer-when-downgrade";
-    app.appendChild(iframe);
+    const hintLink = document.createElement("a");
+    hintLink.href = CONTENT.toDinnerGuide.hintMapUrl;
+    hintLink.target = "_blank";
+    hintLink.rel = "noopener";
+    hintLink.textContent = "ヒントの地図を開く";
+    hintLink.className = "link map-link-button";
+    app.appendChild(hintLink);
+
+    app.appendChild(el("button", {
+      text: "ヒントを隠す",
+      onClick: () => transition({ branchDinnerHintShown: false })
+    }));
   } else {
     app.appendChild(el("button", {
       text: "ヒント",
