@@ -182,7 +182,7 @@ const ARCHIVE_INDEX = [
   { key: "lunchIntro", label: "ランチ後の導入" },
   { key: "lunchRiddle", label: "ランチ後の謎" },
   { key: "museumTicket", label: "入場チケット" },
-  { key: "museumGuide", label: "美術館鑑賞ガイド" },
+  { key: "museumGuide", label: "美術館鑑賞ガイド（モネとルドン）" },
   { key: "toPlantShop", label: "garage TOKYOへの案内" },
   { key: "toDinner", label: "安室への案内" },
   { key: "ending", label: "エンディング" }

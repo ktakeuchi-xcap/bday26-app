@@ -287,15 +287,22 @@ function renderPostDiscovery() {
 function renderVenueGuide() {
   app.appendChild(el("h2", { text: "会場への行き方" }));
 
-  const cards = [
-    ...CONTENT.venueGuide.steps.map((step, i) => `Step ${i + 1}：${step}`),
-    `ランチ：${CONTENT.venueGuide.venueName}`
-  ];
+  const cards = [...CONTENT.venueGuide.steps, CONTENT.venueGuide.venueName];
   const index = state.venueStepIndex || 0;
   const isLast = index >= cards.length - 1;
 
   app.appendChild(el("p", { className: "progress-label", text: `${index + 1} / ${cards.length}` }));
-  app.appendChild(el("p", { className: "venue-card", text: cards[index] }));
+
+  const card = el("div", { className: "venue-card" });
+  card.appendChild(el("div", {
+    className: "venue-card-badge" + (isLast ? " venue-card-badge-goal" : ""),
+    text: isLast ? "🍽" : String(index + 1)
+  }));
+  card.appendChild(el("p", {
+    className: "venue-card-text",
+    text: isLast ? `ランチ：${cards[index]}` : cards[index]
+  }));
+  app.appendChild(card);
 
   const buttonRow = el("div", { className: "venue-nav-row" });
   const backBtn = el("button", {
@@ -539,7 +546,7 @@ function renderMuseumTicket() {
 }
 
 function renderMuseumGuideList() {
-  app.appendChild(el("h2", { text: "美術館鑑賞ガイド" }));
+  app.appendChild(el("h2", { text: "美術館鑑賞ガイド（モネとルドン）" }));
   CONTENT.museumGuide.works.forEach((work) => {
     app.appendChild(el("p", {
       text: work.title,
