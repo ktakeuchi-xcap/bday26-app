@@ -47,8 +47,10 @@ function normalize(s) {
     .replace(/[ァ-ヶ]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0x60)); // カタカナ→ひらがな
 }
 
+// correctAnswerは単一の文字列、または表記ゆれを許容する複数の正答（配列）のいずれかを受け付ける。
 function checkAnswer(input, correctAnswer) {
-  return normalize(input) === normalize(correctAnswer);
+  const accepted = Array.isArray(correctAnswer) ? correctAnswer : [correctAnswer];
+  return accepted.some((answer) => normalize(input) === normalize(answer));
 }
 
 function decideBranch(cutoffTimeStr) {
@@ -434,20 +436,49 @@ function renderRoundLocation(round) {
 }
 
 // 現地の紙に書かれた謎に回答するステップ。
+// paperPuzzle.answer（単一入力欄）またはanswerParts（「〇〇」の「△△」のように複数の空欄に分かれた答え）のいずれかに対応する。
 function renderRoundPaper(round) {
   app.appendChild(renderTreasureHuntProgress(2));
   app.appendChild(el("h2", { text: `ラウンド${state.currentRoundIndex + 1}：紙の謎` }));
   app.appendChild(el("p", { text: round.paperPuzzle.text }));
   app.appendChild(renderHints(`${round.id}_paper`, round.paperPuzzle.hints));
 
-  const input = document.createElement("input");
-  input.placeholder = "合言葉を入力";
   const feedback = el("p", { className: "feedback" });
+  const answerParts = round.paperPuzzle.answerParts;
+  let inputs;
+
+  if (answerParts) {
+    const row = el("div", { className: "answer-blank-row" });
+    row.appendChild(el("span", { text: "「" }));
+    inputs = answerParts.map((part, i) => {
+      const partInput = document.createElement("input");
+      partInput.className = "answer-blank-input";
+      row.appendChild(partInput);
+      if (i < answerParts.length - 1) {
+        row.appendChild(el("span", { text: "」の「" }));
+      }
+      return partInput;
+    });
+    row.appendChild(el("span", { text: "」" }));
+    app.appendChild(row);
+  } else {
+    const input = document.createElement("input");
+    input.placeholder = "合言葉を入力";
+    inputs = [input];
+    app.appendChild(input);
+  }
+
+  const isCorrect = () => {
+    if (answerParts) {
+      return answerParts.every((part, i) => checkAnswer(inputs[i].value, part));
+    }
+    return checkAnswer(inputs[0].value, round.paperPuzzle.answer);
+  };
 
   const button = el("button", {
     text: "決定",
     onClick: () => {
-      if (checkAnswer(input.value, round.paperPuzzle.answer)) {
+      if (isCorrect()) {
         showCorrectAnimation(() => {
           const isLast = state.currentRoundIndex >= CONTENT.rounds.length - 1;
           if (isLast) {
@@ -463,7 +494,6 @@ function renderRoundPaper(round) {
     }
   });
 
-  app.appendChild(input);
   app.appendChild(button);
   app.appendChild(feedback);
 }
@@ -476,7 +506,7 @@ function renderHints(stepId, hints) {
   if (level > 0) {
     if (!collapsed) {
       for (let i = 0; i < level; i++) {
-        container.appendChild(el("p", { text: `ヒント${i + 1}: ${hints[i]}` }));
+        container.appendChild(el("p", { text: `（ヒント）${hints[i]}` }));
       }
     }
     // 表示済みのヒントを隠す／もう一度表示するトグル
