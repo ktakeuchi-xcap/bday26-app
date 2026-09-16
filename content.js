@@ -157,7 +157,7 @@ const CONTENT = {
   },
   // 美術館後、garage TOKYO（丸ビル）への案内。謎はなく、場所の案内のみ。BDAY26-015で確定
   plantShopGuide: {
-    text: "30歳という新しい節目に、これから一緒に育てていく“家族”を迎えに行きませんか。次の行き先は、植物と暮らすことをコンセプトにしたお店「garage TOKYO」。東京駅直結、丸ビル4Fです。",
+    text: "garage TOKYOへ向かおう！",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=garage%20TOKYO%20%E4%B8%B8%E3%83%93%E3%83%AB"
   },
   plantIntro: {

@@ -602,7 +602,7 @@ function renderBranchPlant() {
   link.href = CONTENT.plantShopGuide.mapUrl;
   link.target = "_blank";
   link.rel = "noopener";
-  link.textContent = "garage TOKYOへ向かおう！";
+  link.textContent = "地図を開く";
   link.className = "link map-link-button";
   app.appendChild(link);
   app.appendChild(el("button", {
