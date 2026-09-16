@@ -158,13 +158,12 @@ const CONTENT = {
     text: "30歳という新しい節目に、これから一緒に育てていく“家族”を迎えに行きませんか。次の行き先は、植物と暮らすことをコンセプトにしたお店「garage TOKYO」。東京駅直結、丸ビル4Fです。",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=garage%20TOKYO%20%E4%B8%B8%E3%83%93%E3%83%AB"
   },
-  branchRiddles: {
-    // 美術館後の分岐謎。BDAY26-015で確定
-    toDinner: {
-      text: "（ダミー）東京で育ち、沖縄で腕を磨き、地元・人形町に凱旋してきたシェフのお店。お店の名前は？",
-      answer: "安室",
-      hints: ["ヒント1（ダミー）", "ヒント2（ダミー）", "ヒント3（ダミー）"]
-    }
+  // 美術館後、安室（人形町）への案内。謎はなく、建物の画像と地図で誘導する。確定
+  toDinnerGuide: {
+    text: "この建物を探せ！",
+    image: "assets/branch_dinner/building.jpg",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=%E4%BA%BA%E5%BD%A2%E7%94%BA2%E4%B8%81%E7%9B%AE",
+    hintMapUrl: "https://www.google.com/maps/search/?api=1&query=%E4%BA%BA%E5%BD%A2%E7%94%BA2%E4%B8%81%E7%9B%AE7"
   },
   ending: {
     // 安室到着時のエンドロール。BDAY26-015で確定
@@ -185,6 +184,6 @@ const ARCHIVE_INDEX = [
   { key: "museumTicket", label: "入場チケット" },
   { key: "museumGuide", label: "美術館鑑賞ガイド" },
   { key: "toPlantShop", label: "garage TOKYOへの案内" },
-  { key: "toDinner", label: "安室への謎" },
+  { key: "toDinner", label: "安室への案内" },
   { key: "ending", label: "エンディング" }
 ];

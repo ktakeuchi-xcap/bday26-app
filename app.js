@@ -15,6 +15,7 @@ const DEFAULT_STATE = {
   hintLevelByStep: {},
   hintsCollapsedByStep: {},
   venueStepIndex: 0,
+  branchDinnerHintShown: false,
   gameCompleted: false
 };
 
@@ -589,24 +590,42 @@ function renderBranchPlant() {
   }));
 }
 
+// 安室（人形町）への案内（謎なし）。建物の画像と地図を表示し、着いたらエンディングへ。
 function renderBranchDinner() {
-  app.appendChild(el("p", { text: CONTENT.branchRiddles.toDinner.text }));
-  app.appendChild(renderHints("toDinner", CONTENT.branchRiddles.toDinner.hints));
-  const input = document.createElement("input");
-  input.placeholder = "合言葉を入力";
-  const feedback = el("p", { className: "feedback" });
-  app.appendChild(input);
+  app.appendChild(el("p", { text: CONTENT.toDinnerGuide.text }));
+
+  const img = document.createElement("img");
+  img.src = CONTENT.toDinnerGuide.image;
+  img.alt = "建物の画像";
+  app.appendChild(img);
+
+  const link = document.createElement("a");
+  link.href = CONTENT.toDinnerGuide.mapUrl;
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = "地図を開く";
+  link.className = "link";
+  app.appendChild(link);
+
+  if (state.branchDinnerHintShown) {
+    const hintLink = document.createElement("a");
+    hintLink.href = CONTENT.toDinnerGuide.hintMapUrl;
+    hintLink.target = "_blank";
+    hintLink.rel = "noopener";
+    hintLink.textContent = "ヒントの地図を開く";
+    hintLink.className = "link";
+    app.appendChild(hintLink);
+  } else {
+    app.appendChild(el("button", {
+      text: "ヒント",
+      onClick: () => transition({ branchDinnerHintShown: true })
+    }));
+  }
+
   app.appendChild(el("button", {
-    text: "決定",
-    onClick: () => {
-      if (checkAnswer(input.value, CONTENT.branchRiddles.toDinner.answer)) {
-        goto("ending", { gameCompleted: true });
-      } else {
-        feedback.textContent = "ちがうみたい。もう一度！";
-      }
-    }
+    text: "着いたら次へ",
+    onClick: () => goto("ending", { gameCompleted: true })
   }));
-  app.appendChild(feedback);
 }
 
 function renderEnding() {
@@ -673,7 +692,7 @@ function renderArchiveDetail() {
   }
   // museumGuideはrenderArchiveListからmuseumGuideListへ直接遷移するため、ここには来ない
   else if (key === "toPlantShop") text = CONTENT.plantShopGuide.text;
-  else if (key === "toDinner") text = CONTENT.branchRiddles.toDinner.text;
+  else if (key === "toDinner") text = CONTENT.toDinnerGuide.text;
   else if (key === "ending") text = CONTENT.ending.text;
 
   app.appendChild(el("p", { text }));
