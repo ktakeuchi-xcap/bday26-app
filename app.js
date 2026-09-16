@@ -743,10 +743,15 @@ function renderArchiveList() {
 function renderArchiveDetail() {
   const key = state.currentArchiveKey;
   let text = "（内容なし）";
+  const images = []; // {src, alt}の配列。クイズ等、画像を伴う画面はここに追加する
+
   if (key === "kickoff") text = CONTENT.kickoff.screens.join("\n");
   else if (/^round\d+$/.test(key)) {
     const round = CONTENT.rounds.find((r) => r.id === key);
-    if (round) text = `${round.locationRiddle.text}\n\n（紙の謎）${round.paperPuzzle.text}`;
+    if (round) {
+      text = `${round.locationRiddle.text}\n\n（紙の謎）${round.paperPuzzle.text}`;
+      if (round.locationRiddle.image) images.push({ src: round.locationRiddle.image, alt: "謎の画像" });
+    }
   }
   else if (key === "postDiscovery") text = CONTENT.postDiscovery.screens.join("\n");
   else if (key === "venueGuide") {
@@ -756,15 +761,35 @@ function renderArchiveDetail() {
   else if (key === "plantIntro") text = CONTENT.plantIntro.screens.join("\n");
   else if (key === "dinnerIntro") text = CONTENT.dinnerIntro.screens.join("\n");
   else if (key === "lunchRiddle") {
-    text = `${CONTENT.lunchRiddle.questionText}\n${CONTENT.lunchRiddle.options.map((o) => `${o.id}. ${o.name}`).join(" / ")}`;
+    text = `${CONTENT.lunchRiddle.questionText}\n${CONTENT.lunchRiddle.options.map((o) => `${o.id}. ${o.fullName}`).join(" / ")}`;
+    CONTENT.lunchRiddle.options.forEach((o) => images.push({ src: o.artwork, alt: o.fullName }));
   }
-  // museumGuideはrenderArchiveListからmuseumGuideListへ直接遷移するため、ここには来ない
+  // museumGuide・museumTicketはrenderArchiveListから直接遷移するため、ここには来ない
   else if (key === "toPlantShop") text = CONTENT.plantShopGuide.text;
-  else if (key === "toDinner") text = CONTENT.toDinnerGuide.text;
+  else if (key === "toDinner") {
+    text = CONTENT.toDinnerGuide.text;
+    images.push({ src: CONTENT.toDinnerGuide.image, alt: "建物の画像" });
+  }
   else if (key === "dinnerVenue") text = "ディナー：安室 人形町";
   else if (key === "ending") text = CONTENT.ending.screens.join("\n");
 
   app.appendChild(el("p", { text }));
+  if (images.length > 1) {
+    // 複数画像（クイズの選択肢等）はグリッドで並べる
+    const grid = el("div", { className: "quiz-grid" });
+    images.forEach((image) => {
+      const img = document.createElement("img");
+      img.src = image.src;
+      img.alt = image.alt;
+      grid.appendChild(img);
+    });
+    app.appendChild(grid);
+  } else if (images.length === 1) {
+    const img = document.createElement("img");
+    img.src = images[0].src;
+    img.alt = images[0].alt;
+    app.appendChild(img);
+  }
   app.appendChild(el("button", { text: "一覧に戻る", onClick: () => goto("archiveList") }));
 }
 
