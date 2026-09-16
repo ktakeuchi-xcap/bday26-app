@@ -127,6 +127,7 @@ function render() {
     venueGuide: renderVenueGuide,
     lunchIntro: renderLunchIntro,
     lunchRiddle: renderLunchRiddle,
+    museumTicket: renderMuseumTicket,
     museumGuideList: renderMuseumGuideList,
     museumGuideDetail: renderMuseumGuideDetail,
     branchPlant: renderBranchPlant,
@@ -491,7 +492,38 @@ function renderLunchRiddleMap() {
   app.appendChild(link);
   app.appendChild(el("button", {
     text: "美術館に着いたら次へ",
-    onClick: () => goto("museumGuideList")
+    onClick: () => goto("museumTicket")
+  }));
+}
+
+// 入場チケット画面：開催概要とQRコードを表示する。
+function renderMuseumTicket() {
+  const t = CONTENT.museumTicket;
+  app.appendChild(el("h2", { text: "入場チケット" }));
+  app.appendChild(el("p", { text: t.title }));
+  app.appendChild(el("p", { text: `${t.venue}\n${t.period}\n${t.hours}` }));
+
+  const ticketImg = document.createElement("img");
+  ticketImg.src = t.ticketImage;
+  ticketImg.alt = "開催概要";
+  app.appendChild(ticketImg);
+
+  app.appendChild(el("p", { text: "入場時にこちらのQRコードをご提示ください。" }));
+  const qrImg = document.createElement("img");
+  qrImg.src = t.qrImage;
+  qrImg.alt = "入場用QRコード";
+  qrImg.className = "ticket-qr";
+  app.appendChild(qrImg);
+
+  app.appendChild(el("button", {
+    text: state.viewingFromArchive ? "画面一覧に戻る" : "次へ",
+    onClick: () => {
+      if (state.viewingFromArchive) {
+        goto("archiveList", { viewingFromArchive: false });
+      } else {
+        goto("museumGuideList");
+      }
+    }
   }));
 }
 
@@ -587,6 +619,9 @@ function renderArchiveList() {
         if (item.key === "museumGuide") {
           // 美術館鑑賞ガイドはクリア前と同じ一覧⇔作品詳細の画面をそのまま再利用する
           goto("museumGuideList", { viewingFromArchive: true });
+        } else if (item.key === "museumTicket") {
+          // 入場チケットもクリア前と同じ画面をそのまま再利用する
+          goto("museumTicket", { viewingFromArchive: true });
         } else {
           goto("archiveDetail", { currentArchiveKey: item.key });
         }

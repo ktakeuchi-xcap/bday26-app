@@ -162,6 +162,15 @@
     border-radius: 14px;
     box-shadow: 0 4px 16px rgba(53, 50, 58, 0.12);
   }
+  /* QRコードは角丸・影で読み取り精度を落とさないよう、四角のまま表示する */
+  .ticket-qr {
+    max-width: 220px;
+    margin: 8px auto;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+    padding: 8px;
+  }
   .progress {
     background: rgba(140, 110, 156, 0.15);
     border-radius: 999px;

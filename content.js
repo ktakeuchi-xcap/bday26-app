@@ -103,6 +103,15 @@ const CONTENT = {
     // 正解後、三菱一号館美術館へのGoogle Mapリンクを表示してリダイレクトする
     mapUrl: "https://www.google.com/maps/search/?api=1&query=%E4%B8%89%E8%8F%B1%E4%B8%80%E5%8F%B7%E9%A4%A8%E7%BE%8E%E8%A1%93%E9%A4%A8"
   },
+  museumTicket: {
+    // 入場チケット画面。開催概要はチケット画像記載内容に基づく。確定
+    title: "“カフェ”に集う芸術家 ―印象派からゴッホ、ロートレック、ピカソまで",
+    venue: "三菱一号館美術館",
+    period: "2026年6月13日（土）〜9月23日（水・祝）",
+    hours: "開館時間：10:00〜18:00（但し、祝日除く金曜日、第2水曜日、7月25日、9月19日〜23日は20:00まで。入館は閉館の30分前まで）",
+    ticketImage: "assets/museum_ticket/ticket.jpg",
+    qrImage: "assets/museum_ticket/qrcode.png"
+  },
   museumGuide: {
     // 美術館鑑賞ガイド。BDAY26-014で確定。動作確認用に2作品のみ
     works: [
@@ -143,6 +152,7 @@ const ARCHIVE_INDEX = [
   { key: "venueGuide", label: "会場への行き方" },
   { key: "lunchIntro", label: "ランチ後の導入" },
   { key: "lunchRiddle", label: "ランチ後の謎" },
+  { key: "museumTicket", label: "入場チケット" },
   { key: "museumGuide", label: "美術館鑑賞ガイド" },
   { key: "toPlantShop", label: "garage TOKYOへの案内" },
   { key: "toDinner", label: "安室への謎" },
