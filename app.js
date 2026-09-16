@@ -212,6 +212,13 @@ function showCorrectOverlayOnly() {
   setTimeout(() => overlay.remove(), 900);
 }
 
+// 不正解時の演出。正解時と同じアニメーションで、テキスト・色のみ変える。
+function showIncorrectOverlay() {
+  const overlay = el("div", { className: "correct-overlay incorrect-overlay", text: "ざんねん、ちがうみたい！" });
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.remove(), 900);
+}
+
 function renderUnknown() {
   app.appendChild(el("p", { text: `未知の画面です: ${state.currentScreen}` }));
 }
@@ -529,6 +536,7 @@ function renderLunchRiddle() {
         showCorrectOverlayOnly();
       } else {
         transition({ lunchQuizAnswered: true });
+        showIncorrectOverlay();
       }
     }
   });
