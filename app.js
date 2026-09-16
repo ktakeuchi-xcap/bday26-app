@@ -168,12 +168,28 @@ function renderKickoff() {
     return;
   }
 
+  // 各行を1画面ずつ、スクロールに応じてフェードイン/アウトさせる。
+  // 最後のセクションにカウントダウンを置き、スクロールし切った状態で表示が残るようにする。
+  const scrollContainer = el("div", { className: "kickoff-scroll" });
   CONTENT.kickoff.screens.forEach((text) => {
-    app.appendChild(el("p", { text }));
+    scrollContainer.appendChild(el("section", { className: "kickoff-line", text }));
   });
-
+  const countdownSection = el("section", { className: "kickoff-line kickoff-countdown-section" });
   const countdownEl = el("p", { className: "countdown" });
-  app.appendChild(countdownEl);
+  countdownSection.appendChild(countdownEl);
+  scrollContainer.appendChild(countdownSection);
+  app.appendChild(scrollContainer);
+
+  const sections = scrollContainer.querySelectorAll(".kickoff-line");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle("in-view", entry.isIntersecting);
+      });
+    },
+    { threshold: 0.5 }
+  );
+  sections.forEach((section) => observer.observe(section));
 
   function updateCountdown() {
     const diff = target - new Date();
@@ -188,6 +204,13 @@ function renderKickoff() {
   }
   updateCountdown();
   setInterval(updateCountdown, 1000);
+
+  // 右下：テキストを最初から読み直すボタン
+  app.appendChild(el("button", {
+    text: "はじめから",
+    className: "kickoff-restart",
+    onClick: () => sections[0].scrollIntoView({ behavior: "smooth" })
+  }));
 
   // 動作確認用の隠しボタン。カウントダウンを待たずに進める。
   // 目立たない見た目にしてあるが、本番公開前（BDAY26-020）には削除・無効化を検討すること
