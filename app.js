@@ -437,6 +437,7 @@ function renderRoundLocation(round) {
 
 // 現地の紙に書かれた謎に回答するステップ。
 // paperPuzzle.answer（単一入力欄）またはanswerParts（「〇〇」の「△△」のように複数の空欄に分かれた答え）のいずれかに対応する。
+// answerSuffixを指定すると、単一入力欄の直後に固定テキストを表示する（例：入力欄＋「ズ・ステーキハウス」）。
 function renderRoundPaper(round) {
   app.appendChild(renderTreasureHuntProgress(2));
   app.appendChild(el("h2", { text: `ラウンド${state.currentRoundIndex + 1}：紙の謎` }));
@@ -460,6 +461,14 @@ function renderRoundPaper(round) {
       return partInput;
     });
     row.appendChild(el("span", { text: "」" }));
+    app.appendChild(row);
+  } else if (round.paperPuzzle.answerSuffix) {
+    const row = el("div", { className: "answer-blank-row" });
+    const input = document.createElement("input");
+    input.className = "answer-blank-input";
+    row.appendChild(input);
+    row.appendChild(el("span", { text: round.paperPuzzle.answerSuffix }));
+    inputs = [input];
     app.appendChild(row);
   } else {
     const input = document.createElement("input");
