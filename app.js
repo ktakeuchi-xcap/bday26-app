@@ -621,7 +621,7 @@ function renderBranchDinner() {
   link.href = CONTENT.toDinnerGuide.mapUrl;
   link.target = "_blank";
   link.rel = "noopener";
-  link.textContent = "会場は、このエリアの中にあるよ！";
+  link.textContent = "ここをタップして、会場があるエリアを表示";
   link.className = "link map-link-button";
   app.appendChild(link);
 
