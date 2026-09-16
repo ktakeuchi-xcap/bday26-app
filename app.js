@@ -95,6 +95,7 @@ function goto(screen, extra = {}) {
   forwardStack = [];
   saveNavStacks();
   transition({ currentScreen: screen, ...extra });
+  window.scrollTo(0, 0);
 }
 
 function goBack() {
@@ -104,6 +105,7 @@ function goBack() {
   saveState(state);
   saveNavStacks();
   render();
+  window.scrollTo(0, 0);
 }
 
 function goForward() {
@@ -113,6 +115,7 @@ function goForward() {
   saveState(state);
   saveNavStacks();
   render();
+  window.scrollTo(0, 0);
 }
 
 // ---- 各画面のレンダリング ----
@@ -178,6 +181,7 @@ function goBackToMuseumTicket() {
   saveState(state);
   saveNavStacks();
   render();
+  window.scrollTo(0, 0);
 }
 
 function el(tag, opts = {}, children = []) {
