@@ -82,6 +82,14 @@ const CONTENT = {
     ],
     venueName: "たまさか 丸の内"
   },
+  lunchIntro: {
+    // ランチ後、次のイベント（美術館）への導入メッセージ。確定
+    screens: [
+      "次のイベントでは、萌愛ちゃんが好きなものを見に行きます！",
+      "ここでクイズ！",
+      "萌愛ちゃんが好きな画家は、次のうちどれでしょう？"
+    ]
+  },
   lunchRiddle: {
     // ランチ後、美術館へ誘導する謎。答え＝モネ（クロード・モネ）。BDAY26-013で確定
     text: "（ダミー）赤レンガのクラシックな洋館。この建物で開催されている展覧会の画家は誰でしょう？",
@@ -128,6 +136,7 @@ const ARCHIVE_INDEX = [
   { key: "round3", label: "ラウンド3" },
   { key: "postDiscovery", label: "ポスト発見・着替え指示" },
   { key: "venueGuide", label: "会場への行き方" },
+  { key: "lunchIntro", label: "ランチ後の導入" },
   { key: "lunchRiddle", label: "ランチ後の謎" },
   { key: "museumGuide", label: "美術館鑑賞ガイド" },
   { key: "toPlantShop", label: "garage TOKYOへの案内" },

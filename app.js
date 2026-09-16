@@ -123,6 +123,7 @@ function render() {
     round: renderRound,
     postDiscovery: renderPostDiscovery,
     venueGuide: renderVenueGuide,
+    lunchIntro: renderLunchIntro,
     lunchRiddle: renderLunchRiddle,
     museumGuideList: renderMuseumGuideList,
     museumGuideDetail: renderMuseumGuideDetail,
@@ -276,12 +277,18 @@ function renderVenueGuide() {
     text: isLast ? "ランチを食べ終わった！" : "完了",
     onClick: () => {
       if (isLast) {
-        goto("lunchRiddle");
+        goto("lunchIntro");
       } else {
         transition({ venueStepIndex: index + 1 });
       }
     }
   }));
+}
+
+// ランチ後、次のイベント（美術館）への導入メッセージ。キックオフと同じピン留めスクロール演出。
+function renderLunchIntro() {
+  const nextBtn = el("button", { text: "次へ", className: "kickoff-next", onClick: () => goto("lunchRiddle") });
+  renderScrollStory(CONTENT.lunchIntro.screens, el("div"), [nextBtn]);
 }
 
 function renderRound() {
@@ -565,6 +572,7 @@ function renderArchiveDetail() {
   else if (key === "venueGuide") {
     text = `${CONTENT.venueGuide.steps.map((s, i) => `Step ${i + 1}：${s}`).join("\n")}\nランチ：${CONTENT.venueGuide.venueName}`;
   }
+  else if (key === "lunchIntro") text = CONTENT.lunchIntro.screens.join("\n");
   else if (key === "lunchRiddle") text = CONTENT.lunchRiddle.text;
   // museumGuideはrenderArchiveListからmuseumGuideListへ直接遷移するため、ここには来ない
   else if (key === "toPlantShop") text = CONTENT.plantShopGuide.text;
