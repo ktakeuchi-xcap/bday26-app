@@ -11,6 +11,7 @@ const DEFAULT_STATE = {
   lunchRiddleStep: "answer",
   branchChoice: null,
   hintLevelByStep: {},
+  hintsCollapsedByStep: {},
   gameCompleted: false
 };
 
@@ -158,6 +159,16 @@ function el(tag, opts = {}, children = []) {
   return node;
 }
 
+// 正解時の演出。アニメーション表示後にonDoneを実行して画面遷移する。
+function showCorrectAnimation(onDone) {
+  const overlay = el("div", { className: "correct-overlay", text: "正解！" });
+  document.body.appendChild(overlay);
+  setTimeout(() => {
+    overlay.remove();
+    onDone();
+  }, 900);
+}
+
 function renderUnknown() {
   app.appendChild(el("p", { text: `未知の画面です: ${state.currentScreen}` }));
 }
@@ -288,12 +299,14 @@ function renderRoundPaper(round) {
     text: "決定",
     onClick: () => {
       if (checkAnswer(input.value, round.paperPuzzle.answer)) {
-        const isLast = state.currentRoundIndex >= CONTENT.rounds.length - 1;
-        if (isLast) {
-          goto("milestoneReveal");
-        } else {
-          goto("round", { currentRoundIndex: state.currentRoundIndex + 1, roundStep: "location" });
-        }
+        showCorrectAnimation(() => {
+          const isLast = state.currentRoundIndex >= CONTENT.rounds.length - 1;
+          if (isLast) {
+            goto("milestoneReveal");
+          } else {
+            goto("round", { currentRoundIndex: state.currentRoundIndex + 1, roundStep: "location" });
+          }
+        });
       } else {
         feedback.textContent = "ちがうみたい。もう一度！";
       }
@@ -308,9 +321,23 @@ function renderRoundPaper(round) {
 function renderHints(stepId, hints) {
   const container = el("div", { className: "hints" });
   const level = state.hintLevelByStep[stepId] || 0;
+  const collapsed = !!state.hintsCollapsedByStep[stepId];
 
-  for (let i = 0; i < level; i++) {
-    container.appendChild(el("p", { text: `ヒント${i + 1}: ${hints[i]}` }));
+  if (level > 0) {
+    if (!collapsed) {
+      for (let i = 0; i < level; i++) {
+        container.appendChild(el("p", { text: `ヒント${i + 1}: ${hints[i]}` }));
+      }
+    }
+    // 表示済みのヒントを隠す／もう一度表示するトグル
+    container.appendChild(el("button", {
+      text: collapsed ? "ヒントをもう一度見る" : "ヒントを隠す",
+      className: "hint-toggle",
+      onClick: () => {
+        const hintsCollapsedByStep = { ...state.hintsCollapsedByStep, [stepId]: !collapsed };
+        transition({ hintsCollapsedByStep });
+      }
+    }));
   }
 
   if (level < hints.length) {
@@ -318,7 +345,9 @@ function renderHints(stepId, hints) {
       text: "ヒントを見る",
       onClick: () => {
         const hintLevelByStep = { ...state.hintLevelByStep, [stepId]: level + 1 };
-        transition({ hintLevelByStep });
+        // 新しいヒントを開示する際は、隠している状態を解除して表示する
+        const hintsCollapsedByStep = { ...state.hintsCollapsedByStep, [stepId]: false };
+        transition({ hintLevelByStep, hintsCollapsedByStep });
       }
     }));
   }
