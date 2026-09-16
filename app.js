@@ -145,7 +145,15 @@ function renderNavBar() {
   if (backStack.length === 0 && forwardStack.length === 0) return;
   const bar = el("div", { className: "navbar" });
   if (backStack.length > 0) {
-    bar.appendChild(el("button", { text: "← 1ページ戻る", className: "nav", onClick: goBack }));
+    // 美術館鑑賞ガイド（一覧・詳細）からの「戻る」は、実際の履歴ではなく
+    // 常に直前のクイズ（ランチ後の謎）の正解画面に遷移する
+    const isLiveMuseumGuide =
+      (state.currentScreen === "museumGuideList" || state.currentScreen === "museumGuideDetail") &&
+      !state.viewingFromArchive;
+    const onBackClick = isLiveMuseumGuide
+      ? () => goto("lunchRiddle", { lunchRiddleStep: "map" })
+      : goBack;
+    bar.appendChild(el("button", { text: "← 1ページ戻る", className: "nav", onClick: onBackClick }));
   }
   if (forwardStack.length > 0) {
     bar.appendChild(el("button", { text: "1ページ進む →", className: "nav", onClick: goForward }));
