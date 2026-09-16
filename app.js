@@ -214,7 +214,7 @@ function showCorrectOverlayOnly() {
 
 // 不正解時の演出。正解時と同じアニメーションで、テキスト・色のみ変える。
 function showIncorrectOverlay() {
-  const overlay = el("div", { className: "correct-overlay incorrect-overlay", text: "ざんねん、ちがうみたい！" });
+  const overlay = el("div", { className: "correct-overlay incorrect-overlay", text: "残念\nちがうみたい！" });
   document.body.appendChild(overlay);
   setTimeout(() => overlay.remove(), 900);
 }
@@ -438,6 +438,7 @@ function renderRoundPaper(round) {
         });
       } else {
         feedback.textContent = "ちがうみたい。もう一度！";
+        showIncorrectOverlay();
       }
     }
   });
