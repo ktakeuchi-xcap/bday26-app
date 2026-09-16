@@ -12,6 +12,7 @@ const DEFAULT_STATE = {
   branchChoice: null,
   hintLevelByStep: {},
   hintsCollapsedByStep: {},
+  venueStepIndex: 0,
   gameCompleted: false
 };
 
@@ -257,28 +258,30 @@ function renderPostDiscovery() {
   renderScrollStory(CONTENT.postDiscovery.screens, el("div"), [dressBtn]);
 }
 
-// 会場への行き方：全Stepを縦に並べ、スクロールに応じて上から順にフェードインさせる一覧リスト。
+// 会場への行き方：1枚ずつカードを表示し、「完了」を押すと次のStepのカードが下からせり上がる。
 function renderVenueGuide() {
   app.appendChild(el("h2", { text: "会場への行き方" }));
 
-  const stepLines = CONTENT.venueGuide.steps.map((step, i) =>
-    el("p", { className: "venue-step reveal-on-scroll", text: `Step ${i + 1}：${step}` })
-  );
-  const venueLine = el("p", { className: "venue-step venue-name reveal-on-scroll", text: `ランチ：${CONTENT.venueGuide.venueName}` });
-  const lines = [...stepLines, venueLine];
-  lines.forEach((line) => app.appendChild(line));
+  const cards = [
+    ...CONTENT.venueGuide.steps.map((step, i) => `Step ${i + 1}：${step}`),
+    `ランチ：${CONTENT.venueGuide.venueName}`
+  ];
+  const index = state.venueStepIndex || 0;
+  const isLast = index >= cards.length - 1;
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) entry.target.classList.add("in-view");
-      });
-    },
-    { threshold: 0.3 }
-  );
-  lines.forEach((line) => observer.observe(line));
+  app.appendChild(el("p", { className: "progress-label", text: `${index + 1} / ${cards.length}` }));
+  app.appendChild(el("p", { className: "venue-card", text: cards[index] }));
 
-  app.appendChild(el("button", { text: "ランチを食べ終わった！", onClick: () => goto("lunchRiddle") }));
+  app.appendChild(el("button", {
+    text: isLast ? "ランチを食べ終わった！" : "完了",
+    onClick: () => {
+      if (isLast) {
+        goto("lunchRiddle");
+      } else {
+        transition({ venueStepIndex: index + 1 });
+      }
+    }
+  }));
 }
 
 function renderRound() {
