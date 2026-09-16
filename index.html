@@ -38,17 +38,19 @@
   .blob-1 { top: -60px; left: -60px; width: 220px; height: 220px; background: #cdd9e8; }
   .blob-2 { bottom: -80px; right: -60px; width: 260px; height: 260px; background: #e6cfe0; }
   .blob-3 { top: 40%; right: -100px; width: 200px; height: 200px; background: #f4dcc4; }
+  /* transformが最終的に「none」以外の値（translateY(0)等）で確定すると、
+     子要素のposition:fixed（スクロールガイド等）の基準がビューポートからずれてしまうため、
+     transitionの終着点は必ずtransform: noneにする（keyframesのforwards確定値は使わない）。 */
   #app {
     max-width: 480px;
     margin: 0 auto;
     opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
   #app.fade-in {
-    animation: screen-enter 0.6s ease forwards;
-  }
-  @keyframes screen-enter {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
+    opacity: 1;
+    transform: none;
   }
   h2 {
     font-family: "Shippori Mincho", serif;
