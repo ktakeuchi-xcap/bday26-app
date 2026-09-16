@@ -258,12 +258,27 @@ function renderPostDiscovery() {
 }
 
 // 会場への行き方（仮実装：表示方法は別途検討中）
+// 会場への行き方：全Stepを縦に並べ、スクロールに応じて上から順にフェードインさせる一覧リスト。
 function renderVenueGuide() {
   app.appendChild(el("h2", { text: "会場への行き方" }));
-  CONTENT.venueGuide.steps.forEach((step, i) => {
-    app.appendChild(el("p", { text: `Step ${i + 1}：${step}` }));
-  });
-  app.appendChild(el("p", { text: `ランチ：${CONTENT.venueGuide.venueName}` }));
+
+  const stepLines = CONTENT.venueGuide.steps.map((step, i) =>
+    el("p", { className: "venue-step reveal-on-scroll", text: `Step ${i + 1}：${step}` })
+  );
+  const venueLine = el("p", { className: "venue-step venue-name reveal-on-scroll", text: `ランチ：${CONTENT.venueGuide.venueName}` });
+  const lines = [...stepLines, venueLine];
+  lines.forEach((line) => app.appendChild(line));
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add("in-view");
+      });
+    },
+    { threshold: 0.3 }
+  );
+  lines.forEach((line) => observer.observe(line));
+
   app.appendChild(el("button", { text: "着いたら次へ", onClick: () => goto("lunchRiddle") }));
 }
 
