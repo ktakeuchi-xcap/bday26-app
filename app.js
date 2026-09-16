@@ -9,6 +9,8 @@ const DEFAULT_STATE = {
   currentRoundIndex: 0,
   roundStep: "location",
   lunchRiddleStep: "answer",
+  lunchQuizShowArtwork: false,
+  lunchQuizSelectedOption: null,
   branchChoice: null,
   hintLevelByStep: {},
   hintsCollapsedByStep: {},
@@ -411,22 +413,51 @@ function renderLunchRiddle() {
     renderLunchRiddleMap();
     return;
   }
-  app.appendChild(el("p", { text: CONTENT.lunchRiddle.text }));
-  app.appendChild(renderHints("lunchRiddle", CONTENT.lunchRiddle.hints));
-  const input = document.createElement("input");
-  input.placeholder = "合言葉を入力";
+
+  const options = CONTENT.lunchRiddle.options;
+  const showArtwork = !!state.lunchQuizShowArtwork;
+  const selectedId = state.lunchQuizSelectedOption;
+
+  app.appendChild(el("p", { text: CONTENT.lunchRiddle.questionText }));
+
   const feedback = el("p", { className: "feedback" });
-  app.appendChild(input);
-  app.appendChild(el("button", {
-    text: "決定",
+
+  const grid = el("div", { className: "quiz-grid" });
+  options.forEach((opt) => {
+    const card = el("div", { className: "quiz-option" + (selectedId === opt.id ? " selected" : "") });
+    const img = document.createElement("img");
+    img.src = showArtwork ? opt.artwork : opt.portrait;
+    img.alt = opt.id;
+    card.appendChild(img);
+    card.appendChild(el("p", { className: "quiz-option-label", text: opt.id }));
+    card.addEventListener("click", () => {
+      transition({ lunchQuizSelectedOption: opt.id });
+    });
+    grid.appendChild(card);
+  });
+  app.appendChild(grid);
+
+  if (!showArtwork) {
+    app.appendChild(el("button", {
+      text: "下部に代表的な作品は...？",
+      onClick: () => transition({ lunchQuizShowArtwork: true })
+    }));
+  }
+
+  const submitBtn = el("button", {
+    text: "回答する",
     onClick: () => {
-      if (checkAnswer(input.value, CONTENT.lunchRiddle.answer)) {
-        goto("lunchRiddle", { lunchRiddleStep: "map" });
+      if (selectedId === CONTENT.lunchRiddle.correctOptionId) {
+        showCorrectAnimation(() => {
+          goto("lunchRiddle", { lunchRiddleStep: "map" });
+        });
       } else {
         feedback.textContent = "ちがうみたい。もう一度！";
       }
     }
-  }));
+  });
+  submitBtn.disabled = !selectedId;
+  app.appendChild(submitBtn);
   app.appendChild(feedback);
 }
 
@@ -573,7 +604,9 @@ function renderArchiveDetail() {
     text = `${CONTENT.venueGuide.steps.map((s, i) => `Step ${i + 1}：${s}`).join("\n")}\nランチ：${CONTENT.venueGuide.venueName}`;
   }
   else if (key === "lunchIntro") text = CONTENT.lunchIntro.screens.join("\n");
-  else if (key === "lunchRiddle") text = CONTENT.lunchRiddle.text;
+  else if (key === "lunchRiddle") {
+    text = `${CONTENT.lunchRiddle.questionText}\n${CONTENT.lunchRiddle.options.map((o) => `${o.id}. ${o.name}`).join(" / ")}`;
+  }
   // museumGuideはrenderArchiveListからmuseumGuideListへ直接遷移するため、ここには来ない
   else if (key === "toPlantShop") text = CONTENT.plantShopGuide.text;
   else if (key === "toDinner") text = CONTENT.branchRiddles.toDinner.text;

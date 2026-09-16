@@ -91,10 +91,15 @@ const CONTENT = {
     ]
   },
   lunchRiddle: {
-    // ランチ後、美術館へ誘導する謎。答え＝モネ（クロード・モネ）。BDAY26-013で確定
-    text: "（ダミー）赤レンガのクラシックな洋館。この建物で開催されている展覧会の画家は誰でしょう？",
-    answer: "モネ",
-    hints: ["ヒント1（ダミー）", "ヒント2（ダミー）", "ヒント3（ダミー）"],
+    // ランチ後、美術館へ誘導する4択クイズ。正解＝モネ（クロード・モネ）。BDAY26-013で確定
+    questionText: "Q. 萌愛ちゃんが好きな画家は？",
+    options: [
+      { id: "A", name: "モネ", portrait: "assets/lunch_quiz/monet_portrait.jpg", artwork: "assets/lunch_quiz/monet_artwork.jpg" },
+      { id: "B", name: "ピカソ", portrait: "assets/lunch_quiz/picasso_portrait.jpg", artwork: "assets/lunch_quiz/picasso_artwork.jpg" },
+      { id: "C", name: "ウォーホル", portrait: "assets/lunch_quiz/warhol_portrait.webp", artwork: "assets/lunch_quiz/warhol_artwork.jpg" },
+      { id: "D", name: "ダリ", portrait: "assets/lunch_quiz/dali_portrait.jpeg", artwork: "assets/lunch_quiz/dali_artwork.jpg" }
+    ],
+    correctOptionId: "A",
     // 正解後、三菱一号館美術館へのGoogle Mapリンクを表示してリダイレクトする
     mapUrl: "https://www.google.com/maps/search/?api=1&query=%E4%B8%89%E8%8F%B1%E4%B8%80%E5%8F%B7%E9%A4%A8%E7%BE%8E%E8%A1%93%E9%A4%A8"
   },
