@@ -169,8 +169,10 @@
   }
   /* QRコードは角丸・影で読み取り精度を落とさないよう、四角のまま表示する */
   .ticket-qr {
-    max-width: 220px;
-    margin: 8px auto;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 8px 0;
     border-radius: 0;
     box-shadow: none;
     background: #fff;

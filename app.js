@@ -693,8 +693,8 @@ function renderDinnerVenue() {
 function renderEnding() {
   // gameCompletedはここに遷移してくる呼び出し元（goto("ending", { gameCompleted: true })）で
   // 既にセットされている想定。render内でtransition()を呼ぶとrender()の再帰呼び出しになるため行わない
-  app.appendChild(el("p", { text: CONTENT.ending.text }));
-  app.appendChild(el("button", { text: "画面一覧を見る", onClick: () => goto("archiveList") }));
+  const nextBtn = el("button", { text: "画面一覧を見る", className: "kickoff-next", onClick: () => goto("archiveList") });
+  renderScrollStory(CONTENT.ending.screens, el("div"), [nextBtn]);
 }
 
 function renderArchiveList() {
@@ -758,7 +758,7 @@ function renderArchiveDetail() {
   else if (key === "toPlantShop") text = CONTENT.plantShopGuide.text;
   else if (key === "toDinner") text = CONTENT.toDinnerGuide.text;
   else if (key === "dinnerVenue") text = "ディナー：安室 人形町";
-  else if (key === "ending") text = CONTENT.ending.text;
+  else if (key === "ending") text = CONTENT.ending.screens.join("\n");
 
   app.appendChild(el("p", { text }));
   app.appendChild(el("button", { text: "一覧に戻る", onClick: () => goto("archiveList") }));
