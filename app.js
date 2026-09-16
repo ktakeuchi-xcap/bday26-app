@@ -493,7 +493,7 @@ function renderLunchRiddle() {
     img.alt = opt.id;
     card.appendChild(img);
     card.appendChild(el("p", { className: "quiz-option-label", text: opt.id }));
-    if (answered) {
+    if (state.lunchQuizCorrect) {
       card.appendChild(el("p", { className: "quiz-option-name", text: opt.fullName }));
     }
     card.addEventListener("click", () => {
