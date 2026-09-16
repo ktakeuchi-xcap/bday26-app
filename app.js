@@ -160,7 +160,13 @@ function renderNavBar() {
     const isLiveMuseumGuide =
       (state.currentScreen === "museumGuideList" || state.currentScreen === "museumGuideDetail") &&
       !state.viewingFromArchive;
-    const onBackClick = isLiveMuseumGuide ? goBackToMuseumTicket : goBack;
+    // 画面一覧（アーカイブ）からの「戻る」は、実際の閲覧履歴に関わらず常にエンディング画面まで移動する
+    const isArchiveList = state.currentScreen === "archiveList";
+    const onBackClick = isLiveMuseumGuide
+      ? () => goBackToScreen("museumTicket")
+      : isArchiveList
+      ? () => goBackToScreen("ending")
+      : goBack;
     bar.appendChild(el("button", { text: "← 1ページ戻る", className: "nav", onClick: onBackClick }));
   }
   if (forwardStack.length > 0) {
@@ -169,12 +175,12 @@ function renderNavBar() {
   app.appendChild(bar);
 }
 
-// backStackを実際の履歴として1段ずつ遡り、直前の入場チケット画面まで移動する。
-function goBackToMuseumTicket() {
+// backStackを実際の履歴として1段ずつ遡り、指定した画面まで移動する。
+function goBackToScreen(targetScreen) {
   while (backStack.length > 0) {
     forwardStack.push(state);
     state = backStack.pop();
-    if (state.currentScreen === "museumTicket") {
+    if (state.currentScreen === targetScreen) {
       break;
     }
   }
