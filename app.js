@@ -136,6 +136,7 @@ function render() {
     museumGuideDetail: renderMuseumGuideDetail,
     branchPlant: renderBranchPlant,
     branchDinner: renderBranchDinner,
+    dinnerVenue: renderDinnerVenue,
     ending: renderEnding,
     archiveList: renderArchiveList,
     archiveDetail: renderArchiveDetail
@@ -611,7 +612,7 @@ function renderBranchPlant() {
   link.className = "link map-link-button";
   app.appendChild(link);
   app.appendChild(el("button", {
-    text: "着いたら次へ",
+    text: "植物を買えた！",
     // 「この建物を探せ！」の直前には常にディナー前の導入メッセージを挟む
     onClick: () => goto("dinnerIntro")
   }));
@@ -656,6 +657,19 @@ function renderBranchDinner() {
 
   app.appendChild(el("button", {
     text: "着いたら次へ",
+    onClick: () => goto("dinnerVenue")
+  }));
+}
+
+// ディナー会場到着画面。会場への行き方の最終カードと同じデザインの単一カード表示。
+function renderDinnerVenue() {
+  const card = el("div", { className: "venue-card" });
+  card.appendChild(el("div", { className: "venue-card-badge venue-card-badge-goal", text: "🍽" }));
+  card.appendChild(el("p", { className: "venue-card-text", text: "ディナー：安室 人形町" }));
+  app.appendChild(card);
+
+  app.appendChild(el("button", {
+    text: "いただきます！",
     onClick: () => goto("ending", { gameCompleted: true })
   }));
 }
@@ -727,6 +741,7 @@ function renderArchiveDetail() {
   // museumGuideはrenderArchiveListからmuseumGuideListへ直接遷移するため、ここには来ない
   else if (key === "toPlantShop") text = CONTENT.plantShopGuide.text;
   else if (key === "toDinner") text = CONTENT.toDinnerGuide.text;
+  else if (key === "dinnerVenue") text = "ディナー：安室 人形町";
   else if (key === "ending") text = CONTENT.ending.text;
 
   app.appendChild(el("p", { text }));

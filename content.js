@@ -208,5 +208,6 @@ const ARCHIVE_INDEX = [
   { key: "toPlantShop", label: "garage TOKYOへの案内" },
   { key: "dinnerIntro", label: "ディナー前の導入" },
   { key: "toDinner", label: "安室への案内" },
+  { key: "dinnerVenue", label: "ディナー会場" },
   { key: "ending", label: "エンディング" }
 ];
