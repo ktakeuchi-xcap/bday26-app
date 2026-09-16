@@ -112,6 +112,7 @@ function goForward() {
 const app = document.getElementById("app");
 
 function render() {
+  app.classList.remove("fade-in");
   app.innerHTML = "";
   renderNavBar();
   const screen = state.currentScreen;
@@ -130,6 +131,9 @@ function render() {
     archiveDetail: renderArchiveDetail
   };
   (renderers[screen] || renderUnknown)();
+  // 画面切り替え時に軽くフェードインさせる（クロスフェード演出）
+  void app.offsetWidth; // 強制リフローでアニメーションを再始動させる
+  requestAnimationFrame(() => app.classList.add("fade-in"));
 }
 
 function renderNavBar() {

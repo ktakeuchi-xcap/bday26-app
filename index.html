@@ -4,26 +4,65 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>30歳、はじまりの一日</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg-a: #eaf0f4;
+    --bg-b: #f3eaf0;
+    --bg-c: #fbf0e8;
+    --text: #35323a;
+    --accent: #8c6e9c;
+    --accent-dark: #6f5480;
+    --danger: #b9564b;
+    --card-bg: rgba(255, 255, 255, 0.6);
+  }
   body {
-    font-family: system-ui, sans-serif;
-    background: #faf7f2;
-    color: #333;
+    font-family: "Zen Kaku Gothic New", system-ui, sans-serif;
+    background: linear-gradient(165deg, var(--bg-a) 0%, var(--bg-b) 55%, var(--bg-c) 100%);
+    color: var(--text);
     margin: 0;
     padding: 24px;
-    line-height: 1.7;
+    line-height: 1.8;
+    min-height: 100vh;
   }
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(50px);
+    opacity: 0.5;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .blob-1 { top: -60px; left: -60px; width: 220px; height: 220px; background: #cdd9e8; }
+  .blob-2 { bottom: -80px; right: -60px; width: 260px; height: 260px; background: #e6cfe0; }
+  .blob-3 { top: 40%; right: -100px; width: 200px; height: 200px; background: #f4dcc4; }
   #app {
     max-width: 480px;
     margin: 0 auto;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #app.fade-in {
+    opacity: 1;
+  }
+  h2 {
+    font-family: "Shippori Mincho", serif;
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
   input {
     display: block;
     width: 100%;
     box-sizing: border-box;
-    padding: 8px;
+    padding: 10px 12px;
     margin: 8px 0;
     font-size: 1rem;
+    font-family: inherit;
+    border: 1px solid #d8cfd8;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.7);
   }
   button {
     display: block;
@@ -31,19 +70,46 @@
     padding: 10px;
     margin: 8px 0;
     font-size: 1rem;
+    font-family: inherit;
     cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  button:hover {
+    background: var(--accent-dark);
+  }
+  button:active {
+    transform: scale(0.98);
   }
   .link {
-    color: #a15c2c;
-    text-decoration: underline;
+    display: block;
+    color: var(--text);
+    background: var(--card-bg);
+    border: 1px solid rgba(140, 110, 156, 0.25);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 8px 0;
+    text-decoration: none;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(140, 110, 156, 0.08);
+    transition: box-shadow 0.2s ease, transform 0.1s ease;
+  }
+  .link:hover {
+    box-shadow: 0 4px 12px rgba(140, 110, 156, 0.16);
+  }
+  .link:active {
+    transform: scale(0.99);
   }
   .feedback {
-    color: #c0392b;
+    color: var(--danger);
   }
   .countdown {
     font-size: 1.2rem;
     font-weight: bold;
+    font-family: "Shippori Mincho", serif;
   }
   p {
     white-space: pre-wrap;
@@ -53,21 +119,23 @@
     max-width: 100%;
     height: auto;
     margin: 8px 0;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(53, 50, 58, 0.12);
   }
   .progress {
-    background: #e6ddd0;
+    background: rgba(140, 110, 156, 0.15);
     border-radius: 999px;
     height: 8px;
     overflow: hidden;
   }
   .progress-fill {
-    background: #a15c2c;
+    background: var(--accent);
     height: 100%;
     transition: width 0.2s ease;
   }
   .progress-label {
     font-size: 0.8rem;
-    color: #888;
+    color: #7a7580;
     margin: 4px 0 12px;
   }
   .kickoff-wrapper {
@@ -116,10 +184,11 @@
     padding: 8px 14px;
     margin: 0;
     font-size: 0.85rem;
-    background: #a15c2c;
+    background: var(--accent);
     color: #fff;
     border: none;
     border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(140, 110, 156, 0.3);
     z-index: 10;
   }
   .kickoff-next {
@@ -132,16 +201,17 @@
     padding: 10px 20px;
     margin: 0;
     font-size: 0.95rem;
-    background: #a15c2c;
+    background: var(--accent);
     color: #fff;
     border: none;
     border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(140, 110, 156, 0.3);
     z-index: 10;
   }
   .danger {
-    background: #fff;
-    border: 1px solid #c0392b;
-    color: #c0392b;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--danger);
+    color: var(--danger);
     margin-top: 24px;
   }
   .navbar {
@@ -155,13 +225,17 @@
     padding: 6px;
     margin: 0;
     font-size: 0.85rem;
-    background: #eee;
-    border: 1px solid #ccc;
-    color: #555;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(140, 110, 156, 0.25);
+    color: var(--text);
+    border-radius: 8px;
   }
 </style>
 </head>
 <body>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
 <div id="app"></div>
 <script src="content.js"></script>
 <script src="app.js"></script>
