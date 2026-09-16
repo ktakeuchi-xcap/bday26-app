@@ -11,6 +11,7 @@ const DEFAULT_STATE = {
   lunchRiddleStep: "answer",
   lunchQuizShowArtwork: false,
   lunchQuizSelectedOption: null,
+  lunchQuizAnswered: false,
   branchChoice: null,
   hintLevelByStep: {},
   hintsCollapsedByStep: {},
@@ -470,10 +471,9 @@ function renderLunchRiddle() {
   const options = CONTENT.lunchRiddle.options;
   const showArtwork = !!state.lunchQuizShowArtwork;
   const selectedId = state.lunchQuizSelectedOption;
+  const answered = !!state.lunchQuizAnswered;
 
   app.appendChild(el("p", { text: CONTENT.lunchRiddle.questionText }));
-
-  const feedback = el("p", { className: "feedback" });
 
   const grid = el("div", { className: "quiz-grid" });
   options.forEach((opt) => {
@@ -483,6 +483,9 @@ function renderLunchRiddle() {
     img.alt = opt.id;
     card.appendChild(img);
     card.appendChild(el("p", { className: "quiz-option-label", text: opt.id }));
+    if (answered) {
+      card.appendChild(el("p", { className: "quiz-option-name", text: opt.fullName }));
+    }
     card.addEventListener("click", () => {
       transition({ lunchQuizSelectedOption: opt.id });
     });
@@ -499,17 +502,21 @@ function renderLunchRiddle() {
     text: "回答する",
     onClick: () => {
       if (selectedId === CONTENT.lunchRiddle.correctOptionId) {
+        transition({ lunchQuizAnswered: true });
         showCorrectAnimation(() => {
           goto("lunchRiddle", { lunchRiddleStep: "map" });
         });
       } else {
-        feedback.textContent = "ちがうみたい。もう一度！";
+        transition({ lunchQuizAnswered: true });
       }
     }
   });
   submitBtn.disabled = !selectedId;
   app.appendChild(submitBtn);
-  app.appendChild(feedback);
+
+  if (answered && selectedId !== CONTENT.lunchRiddle.correctOptionId) {
+    app.appendChild(el("p", { className: "feedback", text: "ちがうみたい。もう一度！" }));
+  }
 }
 
 // 正解後、行き先（三菱一号館美術館）のGoogle Mapを開くリンクを表示する。
@@ -532,15 +539,13 @@ function renderLunchRiddleMap() {
 function renderMuseumTicket() {
   const t = CONTENT.museumTicket;
   app.appendChild(el("h2", { text: "入場チケット" }));
-  app.appendChild(el("p", { text: t.title }));
-  app.appendChild(el("p", { text: `${t.venue}\n${t.period}\n${t.hours}` }));
 
   const ticketImg = document.createElement("img");
   ticketImg.src = t.ticketImage;
   ticketImg.alt = "開催概要";
   app.appendChild(ticketImg);
 
-  app.appendChild(el("p", { text: "入場時にこちらのQRコードをご提示ください。" }));
+  app.appendChild(el("p", { text: "入場時にこのQRコードを提示してね⬇️" }));
   const qrImg = document.createElement("img");
   qrImg.src = t.qrImage;
   qrImg.alt = "入場用QRコード";

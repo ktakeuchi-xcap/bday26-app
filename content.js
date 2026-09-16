@@ -96,10 +96,10 @@ const CONTENT = {
     // ランチ後、美術館へ誘導する4択クイズ。正解＝モネ（クロード・モネ）。BDAY26-013で確定
     questionText: "Q. 萌愛ちゃんが好きな画家は？",
     options: [
-      { id: "A", name: "モネ", portrait: "assets/lunch_quiz/monet_portrait.jpg", artwork: "assets/lunch_quiz/monet_artwork.jpg" },
-      { id: "B", name: "ピカソ", portrait: "assets/lunch_quiz/picasso_portrait.jpg", artwork: "assets/lunch_quiz/picasso_artwork.jpg" },
-      { id: "C", name: "ウォーホル", portrait: "assets/lunch_quiz/warhol_portrait.webp", artwork: "assets/lunch_quiz/warhol_artwork.jpg" },
-      { id: "D", name: "ダリ", portrait: "assets/lunch_quiz/dali_portrait.jpeg", artwork: "assets/lunch_quiz/dali_artwork.jpg" }
+      { id: "A", name: "モネ", fullName: "クロード・モネ", portrait: "assets/lunch_quiz/monet_portrait.jpg", artwork: "assets/lunch_quiz/monet_artwork.jpg" },
+      { id: "B", name: "ピカソ", fullName: "パブロ・ピカソ", portrait: "assets/lunch_quiz/picasso_portrait.jpg", artwork: "assets/lunch_quiz/picasso_artwork.jpg" },
+      { id: "C", name: "ウォーホル", fullName: "アンディ・ウォーホル", portrait: "assets/lunch_quiz/warhol_portrait.webp", artwork: "assets/lunch_quiz/warhol_artwork.jpg" },
+      { id: "D", name: "ダリ", fullName: "サルバドール・ダリ", portrait: "assets/lunch_quiz/dali_portrait.jpeg", artwork: "assets/lunch_quiz/dali_artwork.jpg" }
     ],
     correctOptionId: "A",
     // 正解後、三菱一号館美術館へのGoogle Mapリンクを表示してリダイレクトする
