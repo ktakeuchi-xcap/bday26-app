@@ -158,12 +158,23 @@ const CONTENT = {
     text: "30歳という新しい節目に、これから一緒に育てていく“家族”を迎えに行きませんか。次の行き先は、植物と暮らすことをコンセプトにしたお店「garage TOKYO」。東京駅直結、丸ビル4Fです。",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=garage%20TOKYO%20%E4%B8%B8%E3%83%93%E3%83%AB"
   },
+  dinnerIntro: {
+    // 美術館鑑賞ガイド後、ディナーへの導入メッセージ。確定
+    screens: [
+      "楽しめたかな？",
+      "次はお待ちかね、ディナーの時間です！",
+      "と思ったんだけど",
+      "ディナーを予約したお店の名前を忘れちゃった。。。",
+      "写真から、会場を当ててくれるかな？"
+    ]
+  },
   // 美術館後、安室（人形町）への案内。謎はなく、建物の画像と地図で誘導する。確定
   toDinnerGuide: {
-    text: "この建物を探せ！",
+    text: "この建物を探せ！（会場は8Fだよ）",
     image: "assets/branch_dinner/building.jpg",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=%E4%BA%BA%E5%BD%A2%E7%94%BA2%E4%B8%81%E7%9B%AE",
-    hintMapUrl: "https://www.google.com/maps/search/?api=1&query=%E4%BA%BA%E5%BD%A2%E7%94%BA2%E4%B8%81%E7%9B%AE7"
+    // ヒント押下時に地図を直接埋め込み表示する（Google Maps埋め込みURL）
+    hintMapEmbedUrl: "https://www.google.com/maps?q=%E4%BA%BA%E5%BD%A2%E7%94%BA2%E4%B8%81%E7%9B%AE7&output=embed"
   },
   ending: {
     // 安室到着時のエンドロール。BDAY26-015で確定
@@ -183,6 +194,7 @@ const ARCHIVE_INDEX = [
   { key: "lunchRiddle", label: "ランチ後の謎" },
   { key: "museumTicket", label: "入場チケット" },
   { key: "museumGuide", label: "美術館鑑賞ガイド（モネとルドン）" },
+  { key: "dinnerIntro", label: "ディナー前の導入" },
   { key: "toPlantShop", label: "garage TOKYOへの案内" },
   { key: "toDinner", label: "安室への案内" },
   { key: "ending", label: "エンディング" }

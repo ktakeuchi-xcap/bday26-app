@@ -127,6 +127,7 @@ function render() {
     postDiscovery: renderPostDiscovery,
     venueGuide: renderVenueGuide,
     lunchIntro: renderLunchIntro,
+    dinnerIntro: renderDinnerIntro,
     lunchRiddle: renderLunchRiddle,
     museumTicket: renderMuseumTicket,
     museumGuideList: renderMuseumGuideList,
@@ -330,6 +331,19 @@ function renderVenueGuide() {
 function renderLunchIntro() {
   const nextBtn = el("button", { text: "次へ", className: "kickoff-next", onClick: () => goto("lunchRiddle") });
   renderScrollStory(CONTENT.lunchIntro.screens, el("div"), [nextBtn]);
+}
+
+// 美術館鑑賞ガイド後、ディナーへの導入メッセージ。キックオフと同じピン留めスクロール演出。
+function renderDinnerIntro() {
+  const nextBtn = el("button", {
+    text: "次へ",
+    className: "kickoff-next",
+    onClick: () => {
+      const branch = decideBranch(CONTENT.timeCheck.cutoffTime);
+      goto(branch === "plant" ? "branchPlant" : "branchDinner", { branchChoice: branch });
+    }
+  });
+  renderScrollStory(CONTENT.dinnerIntro.screens, el("div"), [nextBtn]);
 }
 
 function renderRound() {
@@ -563,11 +577,8 @@ function renderMuseumGuideList() {
     }));
   } else {
     app.appendChild(el("button", {
-      text: "次へ（全部見ていなくてもOK）",
-      onClick: () => {
-        const branch = decideBranch(CONTENT.timeCheck.cutoffTime);
-        goto(branch === "plant" ? "branchPlant" : "branchDinner", { branchChoice: branch });
-      }
+      text: "次へ",
+      onClick: () => goto("dinnerIntro")
     }));
   }
 }
@@ -610,18 +621,18 @@ function renderBranchDinner() {
   link.href = CONTENT.toDinnerGuide.mapUrl;
   link.target = "_blank";
   link.rel = "noopener";
-  link.textContent = "地図を開く";
+  link.textContent = "会場は、このエリアの中にあるよ！";
   link.className = "link";
   app.appendChild(link);
 
   if (state.branchDinnerHintShown) {
-    const hintLink = document.createElement("a");
-    hintLink.href = CONTENT.toDinnerGuide.hintMapUrl;
-    hintLink.target = "_blank";
-    hintLink.rel = "noopener";
-    hintLink.textContent = "ヒントの地図を開く";
-    hintLink.className = "link";
-    app.appendChild(hintLink);
+    // 「ヒントの地図を開く」は別タブへのリンクではなく、地図をその場に埋め込んで表示する
+    const iframe = document.createElement("iframe");
+    iframe.src = CONTENT.toDinnerGuide.hintMapEmbedUrl;
+    iframe.className = "map-embed";
+    iframe.loading = "lazy";
+    iframe.referrerPolicy = "no-referrer-when-downgrade";
+    app.appendChild(iframe);
   } else {
     app.appendChild(el("button", {
       text: "ヒント",
@@ -694,6 +705,7 @@ function renderArchiveDetail() {
     text = `${CONTENT.venueGuide.steps.map((s, i) => `Step ${i + 1}：${s}`).join("\n")}\nランチ：${CONTENT.venueGuide.venueName}`;
   }
   else if (key === "lunchIntro") text = CONTENT.lunchIntro.screens.join("\n");
+  else if (key === "dinnerIntro") text = CONTENT.dinnerIntro.screens.join("\n");
   else if (key === "lunchRiddle") {
     text = `${CONTENT.lunchRiddle.questionText}\n${CONTENT.lunchRiddle.options.map((o) => `${o.id}. ${o.name}`).join(" / ")}`;
   }
