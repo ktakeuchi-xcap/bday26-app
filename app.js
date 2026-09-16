@@ -62,10 +62,13 @@ function decideBranch(cutoffTimeStr) {
 // ---- 画面遷移 ----
 let state = loadState();
 
-function transition(patch) {
+// animate: このtransition()呼び出し自体が画面（ページ）遷移かどうか。
+// ヒント開示・クイズ選択・カード送り等、同一画面内の更新はfalse（デフォルト）で演出をスキップする。
+// goto()はページ遷移そのものなのでtrueを渡す。
+function transition(patch, animate = false) {
   state = { ...state, ...patch };
   saveState(state);
-  render();
+  render(animate);
 }
 
 // 画面（ページ）単位の履歴。ヒント開示等、画面が変わらない更新はtransition()を直接使い、
@@ -94,7 +97,7 @@ function goto(screen, extra = {}) {
   backStack.push(state);
   forwardStack = [];
   saveNavStacks();
-  transition({ currentScreen: screen, ...extra });
+  transition({ currentScreen: screen, ...extra }, true);
   window.scrollTo(0, 0);
 }
 
@@ -121,7 +124,10 @@ function goForward() {
 // ---- 各画面のレンダリング ----
 const app = document.getElementById("app");
 
-function render() {
+// animate: trueの場合のみ画面切り替えのフェード＋スライド演出を再生する。
+// ヒント開示・クイズの選択・カード送り等、画面（ページ）が変わらない同一画面内の更新では
+// transition()からfalseで呼ばれ、演出なしで即座に再描画する。
+function render(animate = true) {
   app.classList.remove("fade-in");
   app.innerHTML = "";
   renderNavBar();
@@ -146,7 +152,15 @@ function render() {
     archiveDetail: renderArchiveDetail
   };
   (renderers[screen] || renderUnknown)();
-  // 画面切り替え時に軽くフェードインさせる（クロスフェード演出）
+  if (!animate) {
+    // 演出用アニメーションをスキップし、即座に表示状態にする
+    app.style.opacity = "1";
+    app.style.transform = "none";
+    return;
+  }
+  app.style.opacity = "";
+  app.style.transform = "";
+  // 画面切り替え時に軽くフェード＋スライドインさせる演出
   void app.offsetWidth; // 強制リフローでアニメーションを再始動させる
   requestAnimationFrame(() => app.classList.add("fade-in"));
 }
