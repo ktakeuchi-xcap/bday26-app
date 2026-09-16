@@ -567,6 +567,7 @@ function renderMuseumGuideList() {
 function renderMuseumGuideDetail() {
   const work = CONTENT.museumGuide.works.find((w) => w.id === state.currentWorkId) || CONTENT.museumGuide.works[0];
   app.appendChild(el("h2", { text: work.title }));
+  app.appendChild(el("p", { className: "progress-label", text: `${work.artist}／${work.year}・${work.technique}` }));
   app.appendChild(el("p", { text: work.comment }));
   // viewingFromArchiveはmuseumGuideListへ戻る際に引き継ぐ（次へボタンの表示切り替えのため）
   app.appendChild(el("button", { text: "一覧に戻る", onClick: () => goto("museumGuideList", { viewingFromArchive: state.viewingFromArchive }) }));
