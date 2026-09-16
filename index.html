@@ -224,6 +224,22 @@
     from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  .venue-nav-row {
+    display: flex;
+    gap: 8px;
+  }
+  .venue-nav-back {
+    flex: 1;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid rgba(140, 110, 156, 0.4);
+  }
+  .venue-nav-back:hover {
+    background: rgba(140, 110, 156, 0.08);
+  }
+  .venue-nav-next {
+    flex: 2;
+  }
   .kickoff-wrapper {
     position: relative;
   }

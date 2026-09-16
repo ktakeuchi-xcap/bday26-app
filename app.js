@@ -283,8 +283,17 @@ function renderVenueGuide() {
   app.appendChild(el("p", { className: "progress-label", text: `${index + 1} / ${cards.length}` }));
   app.appendChild(el("p", { className: "venue-card", text: cards[index] }));
 
-  app.appendChild(el("button", {
-    text: isLast ? "ランチを食べ終わった！" : "完了",
+  const buttonRow = el("div", { className: "venue-nav-row" });
+  const backBtn = el("button", {
+    text: "戻る",
+    className: "venue-nav-back",
+    onClick: () => transition({ venueStepIndex: Math.max(0, index - 1) })
+  });
+  backBtn.disabled = index === 0;
+  buttonRow.appendChild(backBtn);
+  buttonRow.appendChild(el("button", {
+    text: isLast ? "ランチを食べ終わった！" : "次へ",
+    className: "venue-nav-next",
     onClick: () => {
       if (isLast) {
         goto("lunchIntro");
@@ -293,6 +302,7 @@ function renderVenueGuide() {
       }
     }
   }));
+  app.appendChild(buttonRow);
 }
 
 // ランチ後、次のイベント（美術館）への導入メッセージ。キックオフと同じピン留めスクロール演出。
