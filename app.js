@@ -322,7 +322,7 @@ function renderKickoff() {
 // ポスト発見〜着替え指示の統合画面。キックオフと同じピン留めスクロール演出。
 function renderPostDiscovery() {
   const dressBtn = el("button", {
-    text: "着替えました",
+    text: "着替えた！",
     className: "kickoff-next",
     onClick: () => goto("venueGuide")
   });
@@ -575,7 +575,7 @@ function renderLunchRiddle() {
   app.appendChild(grid);
 
   app.appendChild(el("button", {
-    text: showArtwork ? "画家の顔写真を表示する" : "代表的な作品は...？",
+    text: showArtwork ? "画家の顔写真を表示する" : "ヒント：代表的な作品は...？",
     onClick: () => transition({ lunchQuizShowArtwork: !showArtwork })
   }));
 
@@ -680,11 +680,16 @@ function renderMuseumGuideList() {
   }
 }
 
+// 「。」で終わる文ごとに改行を入れて読みやすくする。
+function breakIntoSentences(text) {
+  return text.split(/(?<=。)/).filter(Boolean).join("\n");
+}
+
 function renderMuseumGuideDetail() {
   const work = CONTENT.museumGuide.works.find((w) => w.id === state.currentWorkId) || CONTENT.museumGuide.works[0];
   app.appendChild(el("h2", { text: work.title }));
   app.appendChild(el("p", { className: "progress-label", text: `${work.artist}／${work.year}・${work.technique}` }));
-  app.appendChild(el("p", { text: work.comment }));
+  app.appendChild(el("p", { text: breakIntoSentences(work.comment) }));
   // viewingFromArchiveはmuseumGuideListへ戻る際に引き継ぐ（次へボタンの表示切り替えのため）
   app.appendChild(el("button", { text: "一覧に戻る", onClick: () => goto("museumGuideList", { viewingFromArchive: state.viewingFromArchive }) }));
 }
