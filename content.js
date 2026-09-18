@@ -155,8 +155,8 @@ const CONTENT = {
     ]
   },
   timeCheck: {
-    // 美術館後の自動分岐判定。確認のため一時的に23:59に変更中。本番前に17:00へ戻すこと
-    cutoffTime: "23:59"
+    // 美術館後の自動分岐判定（17:00より前ならgarage TOKYO経由、以降は安室に直行）。確定
+    cutoffTime: "17:00"
   },
   // 美術館後、garage TOKYO（丸ビル）への案内。謎はなく、場所の案内のみ。BDAY26-015で確定
   plantShopGuide: {

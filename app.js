@@ -54,7 +54,7 @@ function checkAnswer(input, correctAnswer) {
 }
 
 function decideBranch(cutoffTimeStr) {
-  const now = new Date();
+  const now = getNow();
   const [cutoffHour, cutoffMinute] = cutoffTimeStr.split(":").map(Number);
   const cutoff = new Date(now);
   cutoff.setHours(cutoffHour, cutoffMinute, 0, 0);
@@ -133,6 +133,7 @@ function render(animate = true) {
   app.classList.remove("fade-in");
   app.innerHTML = "";
   renderNavBar();
+  renderDebugBannerIfNeeded();
   const screen = state.currentScreen;
   const renderers = {
     kickoff: renderKickoff,
@@ -294,12 +295,40 @@ function renderScrollStory(lines, finalLine, extraButtons = []) {
 
 // キックオフ画面のカウントダウン用setIntervalを1本に保つ（再描画のたびに増殖させない）。
 let kickoffIntervalId = null;
-// デバッグ画面（?debug=1）から設定するテスト用ターゲット日時のlocalStorageキー。
-const DEBUG_TARGET_KEY = "bday26_debug_target";
+// デバッグ画面（?debug=1）から設定するテスト用の値のlocalStorageキー。
+const DEBUG_TARGET_KEY = "bday26_debug_target"; // キックオフのカウントダウン用ターゲット日時
+const DEBUG_NOW_KEY = "bday26_debug_now"; // 美術館後の分岐判定（decideBranch）に使う「現在時刻」
 
 function getKickoffTarget() {
   const override = localStorage.getItem(DEBUG_TARGET_KEY);
   return new Date(override || CONTENT.kickoff.countdownTargetISO);
+}
+
+// decideBranch等、現在時刻を基準に判定する箇所で使う。テスト用の上書きがあればそちらを優先する。
+function getNow() {
+  const override = localStorage.getItem(DEBUG_NOW_KEY);
+  return override ? new Date(override) : new Date();
+}
+
+// テスト用の上書き（カウントダウン・現在時刻のいずれか）が有効な間、全画面共通で警告バナーを表示する。
+function renderDebugBannerIfNeeded() {
+  const hasTargetOverride = !!localStorage.getItem(DEBUG_TARGET_KEY);
+  const hasNowOverride = !!localStorage.getItem(DEBUG_NOW_KEY);
+  if (!hasTargetOverride && !hasNowOverride) return;
+
+  const messages = [];
+  if (hasTargetOverride) messages.push("カウントダウンのターゲット日時");
+  if (hasNowOverride) messages.push("分岐判定用の現在時刻");
+  app.appendChild(el("p", { className: "debug-banner", text: `⚠️ テスト用設定を使用中（${messages.join("・")}）` }));
+  app.appendChild(el("button", {
+    text: "解除して本番の設定に戻す",
+    className: "debug-banner-clear",
+    onClick: () => {
+      localStorage.removeItem(DEBUG_TARGET_KEY);
+      localStorage.removeItem(DEBUG_NOW_KEY);
+      transition({}, true);
+    }
+  }));
 }
 
 function renderKickoff() {
@@ -336,20 +365,6 @@ function renderKickoff() {
   updateCountdown();
   if (kickoffIntervalId) clearInterval(kickoffIntervalId);
   kickoffIntervalId = setInterval(updateCountdown, 1000);
-
-  if (localStorage.getItem(DEBUG_TARGET_KEY)) {
-    const banner = el("p", { className: "debug-banner", text: "⚠️ テスト用カウントダウンを使用中" });
-    const clearBtn = el("button", {
-      text: "解除して本番の時刻に戻す",
-      className: "debug-banner-clear",
-      onClick: () => {
-        localStorage.removeItem(DEBUG_TARGET_KEY);
-        transition({}, true);
-      }
-    });
-    app.appendChild(banner);
-    app.appendChild(clearBtn);
-  }
 }
 
 // カウントダウンの自動切り替え挙動をテストするための画面（本番導線には出さず、?debug=1でのみ到達する）。
@@ -378,6 +393,37 @@ function renderDebugKickoff() {
     className: "hint-toggle",
     onClick: () => {
       localStorage.removeItem(DEBUG_TARGET_KEY);
+      transition({});
+    }
+  }));
+
+  app.appendChild(el("h2", { text: "テスト：美術館後の分岐判定" }));
+  app.appendChild(el("p", {
+    text: `現在の分岐判定は、カットオフ時刻「${CONTENT.timeCheck.cutoffTime}」より前ならgarage TOKYO経由、以降は安室に直行します。下のボタンで分岐判定用の現在時刻をテスト値に上書きしたうえで美術館鑑賞ガイド一覧へ移動できるので、そこから「次へ」を押して実際の分岐先を確認してください。`
+  }));
+
+  function goToMuseumGuideWithTestNow(offsetMinutes) {
+    const [cutoffHour, cutoffMinute] = CONTENT.timeCheck.cutoffTime.split(":").map(Number);
+    const testNow = new Date();
+    testNow.setHours(cutoffHour, cutoffMinute, 0, 0);
+    testNow.setMinutes(testNow.getMinutes() + offsetMinutes);
+    localStorage.setItem(DEBUG_NOW_KEY, testNow.toISOString());
+    goto("museumGuideList", { viewingFromArchive: false });
+  }
+
+  app.appendChild(el("button", {
+    text: "カットオフ前としてテスト（garage TOKYO経由になるか確認）",
+    onClick: () => goToMuseumGuideWithTestNow(-1)
+  }));
+  app.appendChild(el("button", {
+    text: "カットオフ後としてテスト（安室に直行になるか確認）",
+    onClick: () => goToMuseumGuideWithTestNow(1)
+  }));
+  app.appendChild(el("button", {
+    text: "テスト用設定を解除する",
+    className: "hint-toggle",
+    onClick: () => {
+      localStorage.removeItem(DEBUG_NOW_KEY);
       transition({});
     }
   }));
