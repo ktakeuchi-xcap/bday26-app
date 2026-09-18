@@ -616,7 +616,7 @@ function renderLunchRiddleMap() {
   link.target = "_blank";
   link.rel = "noopener";
   link.textContent = "地図を開く";
-  link.className = "link";
+  link.className = "link map-link-button";
   app.appendChild(link);
   app.appendChild(el("button", {
     text: "美術館に着いたら次へ",
