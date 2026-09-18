@@ -762,7 +762,7 @@ function renderDinnerVenue() {
   app.appendChild(card);
 
   app.appendChild(el("button", {
-    text: "いただきます！",
+    text: "席についた！",
     onClick: () => goto("ending", { gameCompleted: true })
   }));
 }
