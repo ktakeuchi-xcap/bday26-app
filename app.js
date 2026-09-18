@@ -151,7 +151,8 @@ function render(animate = true) {
     dinnerVenue: renderDinnerVenue,
     ending: renderEnding,
     archiveList: renderArchiveList,
-    archiveDetail: renderArchiveDetail
+    archiveDetail: renderArchiveDetail,
+    debugKickoff: renderDebugKickoff
   };
   (renderers[screen] || renderUnknown)();
   if (!animate) {
@@ -248,9 +249,12 @@ function renderUnknown() {
 // テキストを1行ずつ、ピン留め（position:sticky）した同じ位置でフェードイン/アウトさせる共通演出。
 // lines：本文の行（配列）。finalLine：最後に表示する要素（本文と同じ見た目でフェード対象に含む）。
 // extraButtons：ガイド同様、スクロールし切った時だけ表示するボタン（.scroll-final-btnを自動付与）。
+// 各要素はDOM要素、または{ el, showWhen }（showWhen()がfalseを返す間は、スクロールし切っていても非表示にする）。
+// 戻り値のrefresh()を呼ぶと、スクロールしていなくても表示条件を再評価できる（例：カウントダウンの秒送り）。
 function renderScrollStory(lines, finalLine, extraButtons = []) {
   const allLines = [...lines.map((text) => el("p", { className: "kickoff-line", text })), finalLine];
   finalLine.classList.add("kickoff-line");
+  const normalizedButtons = extraButtons.map((btn) => (btn instanceof HTMLElement ? { el: btn, showWhen: () => true } : btn));
 
   const wrapper = el("div", { className: "kickoff-wrapper" });
   wrapper.style.height = `${allLines.length * 100}vh`;
@@ -261,7 +265,7 @@ function renderScrollStory(lines, finalLine, extraButtons = []) {
   const guide = el("p", { className: "kickoff-scroll-guide", text: "↓ スクロール" });
   pin.appendChild(guide);
 
-  extraButtons.forEach((btn) => {
+  normalizedButtons.forEach(({ el: btn }) => {
     btn.classList.add("scroll-final-btn");
     pin.appendChild(btn);
   });
@@ -279,31 +283,42 @@ function renderScrollStory(lines, finalLine, extraButtons = []) {
 
     allLines.forEach((line, i) => line.classList.toggle("in-view", i === index));
     guide.style.display = atEnd ? "none" : "block";
-    extraButtons.forEach((btn) => {
-      btn.style.display = atEnd ? "block" : "none";
+    normalizedButtons.forEach(({ el: btn, showWhen }) => {
+      btn.style.display = atEnd && showWhen() ? "block" : "none";
     });
   }
   window.addEventListener("scroll", onScroll);
   onScroll();
+  return { refresh: onScroll };
+}
+
+// キックオフ画面のカウントダウン用setIntervalを1本に保つ（再描画のたびに増殖させない）。
+let kickoffIntervalId = null;
+// デバッグ画面（?debug=1）から設定するテスト用ターゲット日時のlocalStorageキー。
+const DEBUG_TARGET_KEY = "bday26_debug_target";
+
+function getKickoffTarget() {
+  const override = localStorage.getItem(DEBUG_TARGET_KEY);
+  return new Date(override || CONTENT.kickoff.countdownTargetISO);
 }
 
 function renderKickoff() {
-  const target = new Date(CONTENT.kickoff.countdownTargetISO);
+  const target = getKickoffTarget();
   const countdownEl = el("p", { className: "countdown" });
+  let story = null;
+
+  function isTimeUp() {
+    return target - new Date() <= 0;
+  }
 
   function updateCountdown() {
-    const diff = target - new Date();
-    if (diff <= 0) {
-      countdownEl.textContent = "まもなく始まります";
-      return;
-    }
+    const diff = Math.max(0, target - new Date());
     const h = Math.floor(diff / 3600000);
     const m = Math.floor((diff % 3600000) / 60000);
     const s = Math.floor((diff % 60000) / 1000);
     countdownEl.textContent = `開始まで あと ${h}時間${m}分${s}秒`;
+    if (story) story.refresh();
   }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
 
   const restartBtn = el("button", {
     text: "はじめから",
@@ -316,7 +331,56 @@ function renderKickoff() {
     onClick: () => goto("round", { currentRoundIndex: 0 })
   });
 
-  renderScrollStory(CONTENT.kickoff.screens, countdownEl, [restartBtn, nextBtn]);
+  // 「次へ進む」は、スクロールし切った状態に加えて、開始時刻になっていることも条件にする。
+  story = renderScrollStory(CONTENT.kickoff.screens, countdownEl, [restartBtn, { el: nextBtn, showWhen: isTimeUp }]);
+  updateCountdown();
+  if (kickoffIntervalId) clearInterval(kickoffIntervalId);
+  kickoffIntervalId = setInterval(updateCountdown, 1000);
+
+  if (localStorage.getItem(DEBUG_TARGET_KEY)) {
+    const banner = el("p", { className: "debug-banner", text: "⚠️ テスト用カウントダウンを使用中" });
+    const clearBtn = el("button", {
+      text: "解除して本番の時刻に戻す",
+      className: "debug-banner-clear",
+      onClick: () => {
+        localStorage.removeItem(DEBUG_TARGET_KEY);
+        transition({}, true);
+      }
+    });
+    app.appendChild(banner);
+    app.appendChild(clearBtn);
+  }
+}
+
+// カウントダウンの自動切り替え挙動をテストするための画面（本番導線には出さず、?debug=1でのみ到達する）。
+function renderDebugKickoff() {
+  app.appendChild(el("h2", { text: "テスト：キックオフのカウントダウン" }));
+  app.appendChild(el("p", { text: "指定した秒数後を開始時刻に設定してキックオフ画面へ遷移し、時間経過で「次へ進む」ボタンが自動表示されるかを確認できます。" }));
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.value = "10";
+  input.min = "0";
+  app.appendChild(input);
+
+  app.appendChild(el("button", {
+    text: "この秒数でキックオフ画面を確認",
+    onClick: () => {
+      const seconds = Number(input.value) || 0;
+      const targetISO = new Date(Date.now() + seconds * 1000).toISOString();
+      localStorage.setItem(DEBUG_TARGET_KEY, targetISO);
+      goto("kickoff");
+    }
+  }));
+
+  app.appendChild(el("button", {
+    text: "テスト用設定を解除する",
+    className: "hint-toggle",
+    onClick: () => {
+      localStorage.removeItem(DEBUG_TARGET_KEY);
+      transition({});
+    }
+  }));
 }
 
 // ポスト発見〜着替え指示の統合画面。キックオフと同じピン留めスクロール演出。
@@ -871,6 +935,9 @@ function init() {
   const params = new URLSearchParams(window.location.search);
   if (params.get("reset") === "1") {
     state = resetState();
+  }
+  if (params.get("debug") === "1") {
+    state = { ...state, currentScreen: "debugKickoff" };
   }
   render();
 }

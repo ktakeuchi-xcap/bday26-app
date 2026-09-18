@@ -391,6 +391,36 @@
     color: var(--danger);
     margin-top: 24px;
   }
+  /* ?debug=1経由のテスト用カウントダウン使用中に表示する注意書き */
+  .debug-banner {
+    position: fixed;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 6px 12px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 0.8rem;
+    border-radius: 999px;
+    z-index: 20;
+    white-space: nowrap;
+  }
+  .debug-banner-clear {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    padding: 6px 12px;
+    margin: 0;
+    font-size: 0.75rem;
+    background: #fff;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: 999px;
+    z-index: 20;
+  }
   .navbar {
     display: flex;
     gap: 8px;
