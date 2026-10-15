@@ -10,7 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="img/hero.jpg">
+<link rel="preload" as="image" href="img/hero-portrait.jpg" media="(max-width: 639px)">
+<link rel="preload" as="image" href="img/hero-wide.jpg" media="(min-width: 640px)">
 <style>
   :root {
     --paper: #F5F1EA;
@@ -81,7 +82,10 @@
     display: flex;
     align-items: flex-end;
     color: #fff;
-    background: #3b2a20 url("img/hero.jpg") center / cover no-repeat;
+    background: #3b2a20 url("img/hero-portrait.jpg") center / cover no-repeat;
+  }
+  @media (min-width: 640px) {
+    .hero { background-image: url("img/hero-wide.jpg"); }
   }
   .hero::after {
     content: "";
