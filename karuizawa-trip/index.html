@@ -111,20 +111,9 @@
     font-size: 19px;
     font-variation-settings: "opsz" 40;
     letter-spacing: .02em;
-    margin: 0 0 14px;
+    margin: 0;
   }
   .hero-dates b { font-weight: 600; }
-  .members { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-  .members li {
-    font-size: 13px;
-    padding: 2px 10px;
-    border-radius: 99px;
-    background: rgba(255,255,255,.16);
-    border: 1px solid rgba(255,255,255,.28);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-  }
-  .members li.dog { background: rgba(178,58,34,.55); border-color: rgba(255,255,255,.35); }
 
   /* ---------- いま／つぎ カード ---------- */
   .now {
@@ -184,7 +173,6 @@
   .btn.ghost { background: transparent; }
   .btn.small { min-height: 36px; padding: 4px 12px; font-size: 13px; border-radius: 10px; font-weight: 500; }
 
-  /* ---------- まとめ（ベントー） ---------- */
   .section { margin: 36px 0 0; }
   .sec-title {
     display: flex; align-items: baseline; gap: 10px;
@@ -194,28 +182,11 @@
     margin: 0 0 14px;
   }
   .sec-title small { font-family: var(--num); font-style: italic; font-weight: 400; font-size: 14px; color: var(--mist); letter-spacing: .03em; }
-  .bento { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .tile {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 14px;
-    min-height: 104px;
-    display: flex; flex-direction: column; justify-content: space-between;
-  }
-  .tile .k { font-size: 12px; color: var(--mist); letter-spacing: .06em; }
-  .tile .v { font-family: var(--serif); font-weight: 700; font-size: 17px; line-height: 1.4; }
-  .tile .v .n { font-family: var(--num); font-size: 26px; font-weight: 600; }
-  .tile .s { font-size: 12px; color: var(--ink-2); }
-  .tile.wide { grid-column: span 2; }
-  .tile.maple { background: var(--maple-soft); border-color: transparent; }
-  .tile.gold { background: var(--gold-soft); border-color: transparent; }
-  .tile.moss { background: var(--moss-soft); border-color: transparent; }
 
   /* ---------- 日付タブ ---------- */
   .tabs-bar {
     position: sticky; top: 0; z-index: 20;
-    margin-top: 36px;
+    margin-top: 28px;
     padding: 10px 0;
     background: color-mix(in srgb, var(--paper) 88%, transparent);
     backdrop-filter: blur(10px);
@@ -281,6 +252,13 @@
   .stop.is-next .card { border-color: var(--maple); box-shadow: 0 0 0 1px var(--maple), var(--shadow); }
   .media { position: relative; aspect-ratio: 16 / 9; background: var(--paper-2); overflow: hidden; }
   .media img { width: 100%; height: 100%; object-fit: cover; }
+  .credit {
+    position: absolute; right: 8px; bottom: 8px;
+    font-size: 10px; line-height: 1.4; color: #fff; text-decoration: none;
+    padding: 2px 8px; border-radius: 99px;
+    background: rgba(0,0,0,.45);
+    max-width: calc(100% - 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
   .glyph {
     aspect-ratio: 16 / 7;
     display: grid; place-items: center;
@@ -364,28 +342,7 @@
   .stop.is-done .actions .btn { min-height: 40px; padding: 4px 10px; font-size: 12px; font-weight: 500; background: transparent; color: var(--mist); border: 0; text-decoration: underline; text-underline-offset: 3px; }
   .stop.is-done .by { grid-column: 1 / -1; margin: 0; }
 
-  /* ---------- 出発前チェック・困ったとき ---------- */
-  .list { list-style: none; margin: 0; padding: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
-  .list li + li { border-top: 1px solid var(--line); }
-  .prep-item {
-    width: 100%; display: flex; gap: 12px; align-items: flex-start; text-align: left;
-    padding: 14px 16px; min-height: 56px;
-    background: transparent; border: 0; cursor: pointer;
-  }
-  .box {
-    flex: none; width: 24px; height: 24px; margin-top: 1px; border-radius: 7px;
-    border: 2px solid var(--mist); display: grid; place-items: center;
-  }
-  .prep-item[aria-pressed="true"] .box { background: var(--moss); border-color: var(--moss); }
-  .prep-item[aria-pressed="true"] .box::after {
-    content: ""; width: 6px; height: 11px; margin-top: -3px;
-    border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg);
-  }
-  .prep-item[aria-pressed="true"] .txt { color: var(--mist); text-decoration: line-through; text-decoration-color: var(--line); }
-  .prep-item .txt { font-size: 15px; line-height: 1.55; }
-  .prep-item .sub { display: block; font-family: var(--num); font-size: 13px; color: var(--mist); }
-  .prep-item .who { display: block; font-size: 11px; color: var(--moss); }
-
+  /* ---------- 困ったとき ---------- */
   .backup { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); margin: 0 0 10px; overflow: hidden; }
   .backup summary {
     list-style: none; cursor: pointer;
@@ -473,10 +430,6 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
-  @media (min-width: 560px) {
-    .bento { grid-template-columns: repeat(3, 1fr); }
-    .tile.wide { grid-column: span 1; }
-  }
 </style>
 </head>
 <body>
@@ -485,27 +438,16 @@
     <p class="eyebrow" id="eyebrow"></p>
     <h1 id="title"></h1>
     <p class="hero-dates"><b>10.16</b> Fri — <b>10.17</b> Sat, 2026</p>
-    <ul class="members" id="members"></ul>
   </div>
 </header>
 
 <main class="wrap">
   <section class="now" id="now" aria-live="polite"></section>
 
-  <section class="section reveal" aria-labelledby="sum-title">
-    <h2 class="sec-title" id="sum-title">2日間のまとめ <small>Overview</small></h2>
-    <div class="bento" id="bento"></div>
-  </section>
-
   <div class="tabs-bar">
     <div class="tabs" role="tablist" id="tabs"></div>
   </div>
   <div id="days"></div>
-
-  <section class="section" id="prep" aria-labelledby="prep-title">
-    <h2 class="sec-title" id="prep-title">出発前チェック <small>Before you go</small></h2>
-    <ul class="list" id="prep-list"></ul>
-  </section>
 
   <section class="section" id="help" aria-labelledby="help-title">
     <h2 class="sec-title" id="help-title">困ったとき <small>Plan B</small></h2>

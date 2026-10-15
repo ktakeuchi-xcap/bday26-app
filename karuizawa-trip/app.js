@@ -152,10 +152,11 @@ function naviBlock(s) {
   if (s.parking) rows.push(`<div class="navi-row"><span class="lbl">駐車</span><span class="val">${esc(s.parking)}</span></div>`);
   return rows.length ? `<div class="navi" aria-label="カーナビ用の情報">${rows.join("")}</div>` : "";
 }
+// 外部サイトの写真が読めないときは、色面のカードに切り替える
 const media = (s) =>
-  s.photo
-    ? `<div class="media"><img src="${s.photo}" alt="${esc(s.name)}" loading="lazy" decoding="async"></div>`
-    : `<div class="glyph ${s.tone || "ink"}" aria-hidden="true"><span>${esc(s.glyph || s.name[0])}</span></div>`;
+  `<div class="media"><img src="${s.photo}" alt="${esc(s.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer"
+    onerror="this.parentNode.outerHTML='<div class=&quot;glyph ink&quot; aria-hidden=&quot;true&quot;><span>${esc(s.name[0])}</span></div>'">${
+    s.credit ? `<a class="credit" href="${s.credit[1]}" target="_blank" rel="noopener">画像：${esc(s.credit[0])}</a>` : ""}</div>`;
 
 function stopCard(s, next) {
   const c = checks[s.id];
@@ -243,36 +244,16 @@ function renderNow(next) {
     </div>`;
 }
 
-function renderBento() {
-  const prepLeft = T.prep.filter((p) => !checks[p.id]).length;
-  $("#bento").innerHTML = `
-    <div class="tile maple"><span class="k">行き</span><span class="v"><span class="n">11:02</span> 軽井沢着</span><span class="s">東京 9:44発 新幹線</span></div>
-    <div class="tile gold"><span class="k">帰り</span><span class="v"><span class="n">15:00</span> あさま</span><span class="s">10/17・軽井沢発</span></div>
-    <div class="tile wide"><span class="k">宿</span><span class="v">REGINA RESORT 旧軽井沢</span><span class="s">夕食・朝食付き／ココアと同室</span></div>
-    <div class="tile"><span class="k">昼ごはん</span><span class="v">御厨 → ピレネー</span><span class="s">どちらもテラス席</span></div>
-    <div class="tile moss"><span class="k">日の入り</span><span class="v"><span class="n">17:09</span></span><span class="s">17:30には暗くなる</span></div>
-    <a class="tile" href="#prep" style="text-decoration:none"><span class="k">出発前チェック</span><span class="v">${prepLeft ? `残り <span class="n">${prepLeft}</span> 件` : "すべて完了"}</span><span class="s">予約・持ち物 →</span></a>`;
-}
-
-function renderPrep() {
-  $("#prep-list").innerHTML = T.prep
-    .map((p) => {
-      const c = checks[p.id];
-      return `<li><button class="prep-item" data-check="${p.id}" aria-pressed="${!!c}"><span class="box" aria-hidden="true"></span><span class="txt">${esc(p.text)}${p.sub ? `<span class="sub">${esc(p.sub)}</span>` : ""}${c ? `<span class="who">${esc(c.by)} ・ ${hm(new Date(c.at))}</span>` : ""}</span></button></li>`;
-    })
-    .join("");
-}
-
 function renderStatic() {
   document.title = T.title;
   $("#eyebrow").textContent = T.subtitle;
   $("#title").textContent = T.title;
-  $("#members").innerHTML = T.members.map((m) => `<li>${esc(m)}</li>`).join("") + `<li class="dog">${esc(T.dog)}</li>`;
   $("#backups").innerHTML = T.backups
     .map((b) => `<details class="backup"><summary>${esc(b.when)}</summary><div class="b">${b.photo ? `<img src="${b.photo}" alt="" loading="lazy">` : ""}${esc(b.what)}${b.address ? naviBlock({ address: b.address, tel: b.tel }) : ""}</div></details>`)
     .join("");
-  $("#credits").innerHTML = `写真：Wikimedia Commons<ul>${T.credits
-    .map((c) => `<li>${esc(c.use)}：<a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(c.file.replace(/ /g, "_"))}" target="_blank" rel="noopener">${esc(c.file)}</a>（${esc(c.author)}／${c.license === "CC0" ? "CC0" : `<a href="https://creativecommons.org/licenses/by/2.5/deed.ja" target="_blank" rel="noopener">${esc(c.license)}</a>`}）</li>`)
+  const external = [...new Map(T.stops.filter((s) => s.credit).map((s) => [s.credit[0], s.credit])).values()];
+  $("#credits").innerHTML = `写真<ul>${external.map(([n, u]) => `<li><a href="${u}" target="_blank" rel="noopener">${esc(n)}</a></li>`).join("")}${T.credits
+    .map((c) => `<li>${esc(c.use)}：<a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(c.file.replace(/ /g, "_"))}" target="_blank" rel="noopener">${esc(c.file)}</a>（${esc(c.author)}／${c.license === "CC0" ? "CC0" : `<a href="https://creativecommons.org/licenses/${c.license.includes("SA") ? "by-sa/4.0" : "by/2.5"}/deed.ja" target="_blank" rel="noopener">${esc(c.license)}</a>`}・Wikimedia Commons）</li>`)
     .join("")}</ul>`;
 }
 
@@ -283,9 +264,7 @@ function renderMe() {
 function render() {
   const next = nextStop();
   renderNow(next);
-  renderBento();
   renderDays(next);
-  renderPrep();
 }
 
 // ---------- 操作 ----------
