@@ -61,21 +61,31 @@ window.TRIP = {
     {
       id: "d1-harunire", day: "d1", start: "15:45", end: "17:00", name: "ハルニレテラス", kind: "森の小さな街",
       photo: "img/harunire.jpg",
-      lead: "川沿いのウッドデッキを散策。ハーベスト ナガイファームのジェラートでひと休み。17:00に出発すると日没（17:09頃）すぐに宿に着く。",
+      lead: "川沿いのウッドデッキを散策。ハーベスト ナガイファームのジェラートでひと休み。17:00に出発してツルヤへ。",
       tags: [["dog", "デッキは犬OK"], ["clock", "17:00 出発"]],
       hours: "店舗により異なる（ジェラートは10:00〜18:00）",
       address: "長野県北佐久郡軽井沢町長倉2148", tel: "050-3537-3553",
       move: { min: 20, mode: "car" }
     },
     {
-      id: "d1-hotel", day: "d1", start: "17:10", name: "REGINA RESORT 旧軽井沢", kind: "宿・チェックイン",
+      id: "d1-tsuruya", day: "d1", start: "17:10", end: "17:40", name: "ツルヤ 軽井沢店", kind: "スーパー・ホテル飲みの買い出し",
+      photo: "https://static.gltjp.com/glt/data/directory/14000/13780/20221005_060427_8d120795_w1920.webp",
+      credit: ["Go! Local Travel（ツルヤ 軽井沢店）", "https://www.gltjp.com/ja/directory/item/13780/"],
+      lead: "今夜のホテル飲み用のお酒・おつまみと、ジャムなどのお土産をまとめて買う。冷たい物は無料の氷か保冷バッグで。",
+      tags: [["dog", "店内NG（車内か外で待機）"], ["bag", "お酒・おつまみ・お土産"]],
+      hours: "9:30〜20:00",
+      address: "長野県北佐久郡軽井沢町長倉2707", tel: "0267-46-1811",
+      move: { min: 10, mode: "car" }
+    },
+    {
+      id: "d1-hotel", day: "d1", start: "17:55", name: "REGINA RESORT 旧軽井沢", kind: "宿・チェックイン",
       photo: "https://www.regina-resorts.com/kyukaruizawa/images/ogp.jpg",
       credit: ["REGINA RESORT 旧軽井沢 公式サイト", "https://www.regina-resorts.com/kyukaruizawa/"],
-      lead: "チェックインは18:00まで。夕食は懐石で、レストランは全席で愛犬同伴OK。",
+      lead: "チェックインの期限は18:00。遅れそうなときは宿に電話を。夕食は懐石で、レストランは全席で愛犬同伴OK。夕食後はホテル飲み。",
       tags: [["dog", "全館ココアと一緒"], ["clock", "夕食 18:30（仮）"]],
       hours: "チェックイン 15:00〜18:00",
       address: "長野県北佐久郡軽井沢町軽井沢1323-510", tel: "0267-31-5586",
-      move: { min: 10, mode: "car" },
+      move: { min: 15, mode: "car" },
       doneLabel: "チェックインした"
     },
 
@@ -117,24 +127,14 @@ window.TRIP = {
       move: { min: 5, mode: "car" }
     },
     {
-      id: "d2-tsuruya", day: "d2", start: "13:30", end: "14:05", name: "ツルヤ 軽井沢店", kind: "スーパー・お土産",
-      photo: "https://static.gltjp.com/glt/data/directory/14000/13780/20221005_060427_8d120795_w1920.webp",
-      credit: ["Go! Local Travel（ツルヤ 軽井沢店）", "https://www.gltjp.com/ja/directory/item/13780/"],
-      lead: "ジャム・ドリンク・おつまみなどの一般的なお土産はここで。冷蔵品は無料の氷か保冷バッグで。",
-      tags: [["dog", "店内NG（車内か外で待機）"], ["bag", "お土産"]],
-      hours: "9:30〜20:00",
-      address: "長野県北佐久郡軽井沢町長倉2707", tel: "0267-46-1811",
-      move: { min: 15, mode: "car" }
-    },
-    {
-      id: "d2-maruyama", day: "d2", start: "14:10", end: "14:25", name: "丸山珈琲 軽井沢バイパス店", kind: "コーヒー豆",
+      id: "d2-maruyama", day: "d2", start: "13:30", end: "14:15", name: "丸山珈琲 軽井沢バイパス店", kind: "カフェ・コーヒー豆",
       photo: "https://rurubu.jp/img_srw/andmore/images/0000714972/l_fL3DbCq32MmUq6NhSQZFHG8bveXbh21VLxaY2QvY.jpg",
       credit: ["るるぶ&more.", "https://rurubu.jp/andmore/article/23794"],
-      lead: "店舗限定の「モダンブレンド」の豆を買い、コーヒーをテイクアウト。押していたら飛ばして駅へ。",
+      lead: "ウッドデッキのテラス席でコーヒーとガレットをゆっくり。店舗限定の「モダンブレンド」の豆はお土産に。",
       tags: [["dog", "テラスは犬OK"], ["bag", "限定の豆"]],
       hours: "8:00〜19:00",
       address: "長野県北佐久郡軽井沢町長倉北原859-1", tel: "0267-41-6001",
-      move: { min: 4, mode: "car" }
+      move: { min: 15, mode: "car" }
     },
     {
       id: "d2-station", day: "d2", start: "14:40", name: "軽井沢駅", kind: "お見送り",
@@ -149,7 +149,7 @@ window.TRIP = {
 
 
   backups: [
-    { when: "予定が押している", what: "10/16はハルニレテラスの滞在を短くして17:00の出発を守る。10/17は丸山珈琲を飛ばし、ツルヤから駅へ直行（約13分）。" },
+    { when: "予定が押している", what: "10/16はハルニレテラスの滞在を短くして、ツルヤの後のチェックイン（期限18:00）に間に合わせる。間に合わないときは宿（0267-31-5586）に電話。10/17は丸山珈琲の滞在を短くして14:40に駅へ。" },
     { when: "ピレネーの予約が取れない", what: "万平ホテル カフェテラス（予約不可・屋外テラスに愛犬スペースあり・9:30〜18:00）。名物のアップルパイとロイヤルミルクティー。", photo: "img/mampei.jpg", address: "長野県北佐久郡軽井沢町軽井沢925", tel: "0267-42-1234" },
     { when: "雨で散策が難しい", what: "白糸の滝は展望スペースだけに短くし、ハルニレテラスの滞在を延ばす。雲場池は旧軽井沢銀座の滞在に振り替える。" },
     { when: "10/16にハルニレテラスで食事したい", what: "せきれい橋 川上庵（そば）、ベーカリー＆レストラン 沢村（いずれもテラス席あり）。" }
